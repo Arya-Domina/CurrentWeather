@@ -2,24 +2,21 @@ package com.example.currentweather
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.example.currentweather.rest.ApiService
+import com.example.currentweather.models.Params
+import com.example.currentweather.repository.WeatherRepository
 import com.example.currentweather.util.Logger
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
 import org.koin.android.ext.android.inject
 
 class MainActivity : AppCompatActivity() {
 
-    private val apiService: ApiService by inject()
+    private val weatherRepository: WeatherRepository by inject()
     private var d: Disposable? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        d = apiService.getCurrentWeather("London")
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
+        d = weatherRepository.getCurrentWeather(Pair(Params.CityName, null))
             .subscribe({
                 Logger.log("MainActivity", "it: $it")
             }, {

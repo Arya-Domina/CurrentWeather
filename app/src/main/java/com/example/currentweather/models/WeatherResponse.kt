@@ -15,13 +15,13 @@ class WeatherResponse(
     var windSpeed: Double? = null,
     var windDegree: Int? = null,
     var clouds: Int? = null,
-    var data: Long? = null,
+    var date: Long? = null,
     var countryCode: String? = null,
     var sunrise: Long? = null,
     var sunset: Long? = null,
     var timeZone: Long? = null,
     var id: Long? = null,
-    var name: String? = null
+    var cityName: String? = null
 ) {
     override fun toString(): String {
         val format = SimpleDateFormat(DATE_TIME_FORMAT, Locale.getDefault())
@@ -36,13 +36,13 @@ class WeatherResponse(
                 "speed=$windSpeed, " +
                 "degree=$windDegree, " +
                 "clouds=$clouds, " +
-                "data=${format.format(data?.convertStoMS())}, " +
+                "date=${format.format(date?.convertStoMS())}, " +
                 "country=$countryCode, " +
                 "sunrise=${format.format(sunrise?.convertStoMS())}, " +
                 "sunset=${format.format(sunset?.convertStoMS())}, " +
                 "timeZone=$timeZone, " +
                 "id=$id, " +
-                "name=$name)"
+                "cityName=$cityName)"
     }
 
     private fun Long.convertStoMS(): Long? = this * 1000
