@@ -1,6 +1,5 @@
 package com.example.currentweather.models
 
-import com.example.currentweather.util.Logger
 import com.google.gson.JsonDeserializationContext
 import com.google.gson.JsonDeserializer
 import com.google.gson.JsonElement
@@ -13,10 +12,8 @@ class WeatherDeserializer : JsonDeserializer<WeatherResponse> {
         typeOfT: Type?,
         context: JsonDeserializationContext?
     ): WeatherResponse {
-        Logger.log("WeatherDeserializer", "start")
         var weatherResponse = WeatherResponse()
         json?.asJsonObject?.let {
-            Logger.log("WeatherDeserializer", "json: $json")
             weatherResponse = WeatherResponse(
                 Coordination(
                     it.getJsonObject("coord")?.getDouble("lon") ?: 0.0,

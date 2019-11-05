@@ -33,6 +33,7 @@ class WeatherRepository : KoinComponent {
             .doOnSuccess {
                 preferenceHelper.saveWeather(it)
             }
+            .onErrorReturn { WeatherResponse() }
     }
 
     private fun WeatherResponse.getSavedParameter(params: Params): Any {

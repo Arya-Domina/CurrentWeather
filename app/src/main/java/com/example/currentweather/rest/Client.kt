@@ -12,13 +12,11 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 class Client {
     private val apiService: ApiService by lazy {
-        Logger.log("Client", "init api")
         return@lazy createApiService()
     }
 
     private fun createApiService(): ApiService {
-        Logger.log("Client", "create api")
-        val r = Retrofit.Builder()
+        return Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .addConverterFactory(
@@ -30,8 +28,6 @@ class Client {
             )
             .build()
             .create(ApiService::class.java)
-        Logger.log("Client", "created")
-        return r
     }
 
     fun getApi(): ApiService {

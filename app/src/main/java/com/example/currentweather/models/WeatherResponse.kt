@@ -23,8 +23,8 @@ class WeatherResponse(
     var id: Long? = null,
     var cityName: String? = null
 ) {
+
     override fun toString(): String {
-        val format = SimpleDateFormat(DATE_TIME_FORMAT, Locale.getDefault())
         return "WeatherResponse(" +
                 "coord=$coordination, " +
                 "main=$weatherMain, " +
@@ -36,14 +36,22 @@ class WeatherResponse(
                 "speed=$windSpeed, " +
                 "degree=$windDegree, " +
                 "clouds=$clouds, " +
-                "date=${format.format(date?.convertStoMS())}, " +
+                "date=${date.convertToString()}, " +
                 "country=$countryCode, " +
-                "sunrise=${format.format(sunrise?.convertStoMS())}, " +
-                "sunset=${format.format(sunset?.convertStoMS())}, " +
+                "sunrise=${sunrise.convertToString()}, " +
+                "sunset=${sunset.convertToString()}, " +
                 "timeZone=$timeZone, " +
                 "id=$id, " +
                 "cityName=$cityName)"
     }
 
-    private fun Long.convertStoMS(): Long? = this * 1000
+    private fun Long?.convertToString(): String? {
+        return this?.let {
+            SimpleDateFormat(DATE_TIME_FORMAT, Locale.getDefault())
+                .format(this.convertStoMS())
+        }
+    }
+
+    private fun Long.convertStoMS(): Long = this * 1000
+
 }
