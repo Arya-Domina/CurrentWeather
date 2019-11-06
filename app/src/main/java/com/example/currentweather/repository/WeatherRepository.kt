@@ -33,7 +33,11 @@ class WeatherRepository : KoinComponent {
             .doOnSuccess {
                 preferenceHelper.saveWeather(it)
             }
-            .onErrorReturn { WeatherResponse() }
+            .onErrorReturn {
+                if (param.first == Params.CityName)
+                    WeatherResponse(cityName = param.second as String)
+                else WeatherResponse()
+            }
     }
 
     private fun WeatherResponse.getSavedParameter(params: Params): Any {

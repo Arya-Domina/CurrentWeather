@@ -1,5 +1,43 @@
 <resources>
     <string name="app_name">CurrentWeather</string>
+
+
+    <!-- TextPair -->
+    <string name="denotation">Denotation</string>
+    <string name="value_text">Value</string>
+
+    <!-- Main info -->
     <string name="enter_city">Enter city</string>
+    <string name="temperature_degree">%.1f°</string>
     <string name="unknown_city">Unknown city</string>
+    <string name="nan">NaN</string>
+
+    <!-- Details -->
+    <string name="wind_name">Wind</string>
+    <string name="wind_format">%1$.0f m/s, %2$s</string>
+    <string name="wind_direction_n">North</string>
+    <string name="wind_direction_ne">Northeast</string>
+    <string name="wind_direction_nw">Northwest</string>
+    <string name="wind_direction_s">South</string>
+    <string name="wind_direction_se">Southeast</string>
+    <string name="wind_direction_sw">Southwest</string>
+    <string name="wind_direction_w">West</string>
+    <string name="wind_direction_e">East</string>
+    <string name="wind_direction_un">Unknown direction</string>
+    <string name="pressure_name">Pressure</string>
+    <string name="pressure_format">%d mm Hg</string>
+    <string name="humidity_name">Humidity</string>
+    <string name="humidity_format">%d%%</string>
+    <string name="clouds_name">Clouds</string>
+    <string name="clouds_format">%d%%</string>
+    <string name="time_name">Time</string>
+    <string name="time_format">HH:mm</string>
+    <string name="sun_name">Sun</string>
+    <string name="sun_format">from %1$s to %2$s</string>
+
+    <!--Mock strings-->
+    <string name="hint_city_name">Omsk</string>
+    <string name="hint_weather">14°</string>
+    <string name="hint_description">Rain</string>
+
 </resources>
