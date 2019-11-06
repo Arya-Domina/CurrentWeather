@@ -3,6 +3,7 @@ package com.example.currentweather.util
 import android.content.Context
 import android.content.SharedPreferences
 import android.preference.PreferenceManager
+import com.example.currentweather.Constants.Companion.DEFAULT_CITY
 import com.example.currentweather.models.WeatherResponse
 import com.google.gson.Gson
 
@@ -22,7 +23,7 @@ class PreferenceHelper(context: Context) {
             gson.fromJson(sharedPreferences.getString(WEATHER, ""), WeatherResponse::class.java)
         } catch (e: Exception) {
             Logger.log("PreferenceHelper", "getWeather: response isn't stored")
-            WeatherResponse()
+            WeatherResponse(cityName = DEFAULT_CITY)
         }
     }
 

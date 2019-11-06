@@ -9,17 +9,10 @@ import com.example.currentweather.Constants.Companion.DEFAULT_NUMBER
 import com.example.currentweather.Constants.Companion.GREEN_NUMBER
 import com.example.currentweather.Constants.Companion.RED_NUMBER
 import com.example.currentweather.R
-import com.example.currentweather.models.Params
-import com.example.currentweather.repository.WeatherRepository
 import com.example.currentweather.util.Logger
-import com.example.currentweather.util.PreferenceHelper
 import kotlinx.android.synthetic.main.weather_widget_config.*
-import org.koin.android.ext.android.inject
 
 class WeatherWidgetConfigure : Activity() {
-
-    private val repository: WeatherRepository by inject()
-    private val preferenceHelper: PreferenceHelper by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,22 +55,13 @@ class WeatherWidgetConfigure : Activity() {
         button.setOnClickListener {
             val colorNumber = defineColorNumber()
             Logger.log("WeatherWidgetConfigure", "click, color: $colorNumber")
-            preferenceHelper.saveColorNumber(widgetId, colorNumber)
 
-            repository
-                .getCurrentWeather(Pair(Params.CityName, preferenceHelper.getWeather().cityName))
-                .subscribe({ response ->
-                    WeatherWidgetProvider().update(
-                        this,
-                        AppWidgetManager.getInstance(this),
-                        widgetId,
-                        response.temperature,
-                        response.date,
-                        colorNumber
-                    )
-                }, {
-                    Logger.log("WeatherWidgetConfigure", "request err", it)
-                })
+            WeatherWidgetProvider().updateWidget(
+                this,
+                AppWidgetManager.getInstance(this),
+                widgetId,
+                colorNumber
+            )
 
             setResult(RESULT_OK, resultIntent)
             Logger.log("WeatherWidgetConfigure", "finish ok, $widgetId")

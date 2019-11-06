@@ -46,5 +46,6 @@
     <string name="hint_time" translatable="false">12:34:66</string>
     <string name="denotation" translatable="false">Denotation</string>
     <string name="value_text" translatable="false">Value</string>
+    <string name="empty" translatable="false" />
 
 </resources>

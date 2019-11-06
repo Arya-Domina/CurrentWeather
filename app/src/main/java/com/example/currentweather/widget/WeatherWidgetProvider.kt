@@ -29,7 +29,51 @@ class WeatherWidgetProvider : AppWidgetProvider(), KoinComponent {
     private val repository: WeatherRepository by inject()
     private val preferenceHelper: PreferenceHelper by inject()
 
-    fun update(
+    override fun onUpdate(context: Context, manager: AppWidgetManager, widgetIds: IntArray) {
+        Logger.log("WeatherWidgetProvider", "onUpdate")
+        widgetIds.forEach { widgetId ->
+            Logger.log("WeatherWidgetProvider", "id: $widgetId")
+            updateWidget(context, manager, widgetId)
+        }
+        super.onUpdate(context, manager, widgetIds)
+    }
+
+    override fun onReceive(context: Context?, intent: Intent?) {
+        super.onReceive(context, intent)
+        Logger.log("WeatherWidgetProvider", "onReceive, action: ${intent?.action}")
+        if (context != null
+            && intent?.action.equals(ACTION_UPDATE_APPWIDGET)
+            && intent?.hasExtra(EXTRA_ID_APPWIDGET) == true
+        ) {
+            updateWidget(
+                context,
+                AppWidgetManager.getInstance(context),
+                intent.getIntExtra(EXTRA_ID_APPWIDGET, 0)
+            )
+        }
+    }
+
+    @SuppressLint("CheckResult")
+    fun updateWidget(
+        context: Context, manager: AppWidgetManager, widgetId: Int, colorNumber: Int? = null
+    ) {
+        if (colorNumber != null) preferenceHelper.saveColorNumber(widgetId, colorNumber)
+        val oldWeather = preferenceHelper.getWeather()
+        repository.getCurrentWeather(Pair(Params.CityName, oldWeather.cityName), false)
+            .subscribe({ response ->
+                Logger.log("WeatherWidgetProvider", "updateWidget response: $response")
+                update(
+                    context, manager, widgetId, response.temperature, response.date, colorNumber
+                )
+            }, {
+                Logger.log("WeatherWidgetProvider", "updateWidget err", it)
+                update(
+                    context, manager, widgetId, oldWeather.temperature, oldWeather.date, colorNumber
+                )
+            })
+    }
+
+    private fun update(
         context: Context, manager: AppWidgetManager, widgetId: Int,
         temperature: Double?, date: Long?, colorNumber: Int? = null
     ) {
@@ -89,40 +133,6 @@ class WeatherWidgetProvider : AppWidgetProvider(), KoinComponent {
 
     private fun RemoteViews.upWidget(manager: AppWidgetManager, widgetId: Int) {
         manager.updateAppWidget(widgetId, this)
-    }
-
-    override fun onUpdate(context: Context, manager: AppWidgetManager, widgetIds: IntArray) {
-        Logger.log("WeatherWidgetProvider", "onUpdate")
-        widgetIds.forEach { widgetId ->
-            Logger.log("WeatherWidgetProvider", "id: $widgetId")
-            updateWidget(context, manager, widgetId)
-        }
-        super.onUpdate(context, manager, widgetIds)
-    }
-
-    override fun onReceive(context: Context?, intent: Intent?) {
-        super.onReceive(context, intent)
-        Logger.log("WeatherWidgetProvider", "onReceive, action: ${intent?.action}")
-        if (context != null
-            && intent?.action.equals(ACTION_UPDATE_APPWIDGET)
-            && intent?.hasExtra(EXTRA_ID_APPWIDGET) == true
-        ) {
-            updateWidget(
-                context,
-                AppWidgetManager.getInstance(context),
-                intent.getIntExtra(EXTRA_ID_APPWIDGET, 0)
-            )
-        }
-    }
-
-    @SuppressLint("CheckResult")
-    private fun updateWidget(context: Context, manager: AppWidgetManager, widgetId: Int) {
-        repository.getCurrentWeather(Pair(Params.CityName, preferenceHelper.getWeather().cityName))
-            .subscribe({ response ->
-                update(context, manager, widgetId, response.temperature, response.date)
-            }, {
-                Logger.log("WeatherWidgetProvider", "request err", it)
-            })
     }
 
 }

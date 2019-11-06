@@ -9,6 +9,8 @@ import com.example.currentweather.util.PreferenceHelper
 import io.reactivex.Single
 import org.koin.core.KoinComponent
 import org.koin.core.inject
+import retrofit2.HttpException
+import java.net.UnknownHostException
 import java.util.*
 
 class WeatherRepository : KoinComponent {
@@ -17,9 +19,13 @@ class WeatherRepository : KoinComponent {
     private val localRepo: LocalRepository by inject()
     private val preferenceHelper: PreferenceHelper by inject()
 
-    fun getCurrentWeather(param: Pair<Params, Any?>): Single<WeatherResponse> {
-        return getLocalWeather()
+    fun getCurrentWeather(
+        param: Pair<Params, Any?>, errorProcessing: Boolean = true
+    ): Single<WeatherResponse> {
+        var oldWeather = WeatherResponse()
+        val single = getLocalWeather()
             .flatMap {
+                oldWeather = it
                 val second = if (param.second == null) {
                     it.getSavedParameter(param.first)
                 } else {
@@ -33,11 +39,15 @@ class WeatherRepository : KoinComponent {
             .doOnSuccess {
                 preferenceHelper.saveWeather(it)
             }
-            .onErrorReturn {
-                if (param.first == Params.CityName)
+        return if (errorProcessing) {
+            single.onErrorReturn {
+                if (it is UnknownHostException) { // no connection
+                    oldWeather
+                } else if (it is HttpException && param.first == Params.CityName) { // wrong city name
                     WeatherResponse(cityName = param.second as String)
-                else WeatherResponse()
+                } else WeatherResponse()
             }
+        } else single
     }
 
     private fun WeatherResponse.getSavedParameter(params: Params): Any {

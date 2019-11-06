@@ -7,6 +7,7 @@ class Constants {
         const val INTERVAL = 600 // 60 * 10 = 10 min in s
         const val DATE_TIME_FORMAT = "yyyy.MM.dd HH:mm"
         const val TIME_FORMAT = "HH:mm"
+        const val DEFAULT_CITY = "London"
 
         // Weather Widget
         const val DEFAULT_NUMBER = 0
