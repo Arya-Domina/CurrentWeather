@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="enter_city">Введите город</string>
+    <string name="unknown_city">Неизвестный город</string>
+
+    <string name="wind_name">Ветер</string>
+    <string name="wind_format">%1$.0f м/с, %2$s</string>
+    <string name="wind_direction_e">Восточный</string>
+    <string name="wind_direction_n">Северный</string>
+    <string name="wind_direction_ne">Северо-восточный</string>
+    <string name="wind_direction_nw">Северо-западный</string>
+    <string name="wind_direction_s">Южный</string>
+    <string name="wind_direction_se">Юго-восточный</string>
+    <string name="wind_direction_sw">Юго-западный</string>
+    <string name="wind_direction_w">Западный</string>
+    <string name="wind_direction_un">Неизвестное направление</string>
+    <string name="pressure_name">Давление</string>
+    <string name="pressure_format" translatable="false">%d мм рт. ст.</string>
+    <string name="humidity_name">Влажность</string>
+    <string name="clouds_name">Облачность</string>
+    <string name="time_name">Время</string>
+    <string name="sun_name">Солнце</string>
+    <string name="sun_format">с %1$s до %2$s</string>
+
+    <string name="red">Красный</string>
+    <string name="blue">Синий</string>
+    <string name="green">Зелёный</string>
+    <string name="white">Белый</string>
+    <string name="create_widget">Создать виджет</string>
+    <string name="choose_widget_color">Выберете цвет виджета</string>
+
+</resources>

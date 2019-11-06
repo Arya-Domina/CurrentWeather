@@ -1,15 +1,11 @@
 <resources>
-    <string name="app_name">CurrentWeather</string>
-
-    <!-- TextPair -->
-    <string name="denotation">Denotation</string>
-    <string name="value_text">Value</string>
+    <string name="app_name" translatable="false">CurrentWeather</string>
 
     <!-- Main info -->
     <string name="enter_city">Enter city</string>
-    <string name="temperature_degree">%.1f°</string>
+    <string name="temperature_degree" translatable="false">%.1f°</string>
     <string name="unknown_city">Unknown city</string>
-    <string name="nan">NaN</string>
+    <string name="nan" translatable="false">NaN</string>
 
     <!-- Details -->
     <string name="wind_name">Wind</string>
@@ -26,11 +22,11 @@
     <string name="pressure_name">Pressure</string>
     <string name="pressure_format">%d mm Hg</string>
     <string name="humidity_name">Humidity</string>
-    <string name="humidity_format">%d%%</string>
+    <string name="humidity_format" translatable="false">%d%%</string>
     <string name="clouds_name">Clouds</string>
-    <string name="clouds_format">%d%%</string>
+    <string name="clouds_format" translatable="false">%d%%</string>
     <string name="time_name">Time</string>
-    <string name="time_format">HH:mm</string>
+    <string name="time_format" translatable="false">HH:mm</string>
     <string name="sun_name">Sun</string>
     <string name="sun_format">from %1$s to %2$s</string>
 
@@ -41,12 +37,14 @@
     <string name="white">White</string>
     <string name="create_widget">Create widget</string>
     <string name="choose_widget_color">Choose widget color</string>
-    <string name="temperature_widget">%.0f°</string>
+    <string name="temperature_widget" translatable="false">%.0f°</string>
 
     <!--Mock strings-->
-    <string name="hint_city_name">Omsk</string>
-    <string name="hint_weather">14°</string>
-    <string name="hint_description">Rain</string>
-    <string name="hint_time">12:34:66</string>
+    <string name="hint_city_name" translatable="false">Omsk</string>
+    <string name="hint_weather" translatable="false">14°</string>
+    <string name="hint_description" translatable="false">Rain</string>
+    <string name="hint_time" translatable="false">12:34:66</string>
+    <string name="denotation" translatable="false">Denotation</string>
+    <string name="value_text" translatable="false">Value</string>
 
 </resources>
