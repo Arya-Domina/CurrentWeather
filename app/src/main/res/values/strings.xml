@@ -1,7 +1,6 @@
 <resources>
     <string name="app_name">CurrentWeather</string>
 
-
     <!-- TextPair -->
     <string name="denotation">Denotation</string>
     <string name="value_text">Value</string>
@@ -35,9 +34,19 @@
     <string name="sun_name">Sun</string>
     <string name="sun_format">from %1$s to %2$s</string>
 
+    <!--Widget-->
+    <string name="red">Red</string>
+    <string name="green">Green</string>
+    <string name="blue">Blue</string>
+    <string name="white">White</string>
+    <string name="create_widget">Create widget</string>
+    <string name="choose_widget_color">Choose widget color</string>
+    <string name="temperature_widget">%.0f°</string>
+
     <!--Mock strings-->
     <string name="hint_city_name">Omsk</string>
     <string name="hint_weather">14°</string>
     <string name="hint_description">Rain</string>
+    <string name="hint_time">12:34:66</string>
 
 </resources>

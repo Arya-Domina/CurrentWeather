@@ -10,6 +10,7 @@ class PreferenceHelper(context: Context) {
 
     companion object {
         private const val WEATHER = "weather"
+        private const val WIDGET_COLOR_NUMBER = "widget_color_"
     }
 
     private val sharedPreferences: SharedPreferences =
@@ -34,6 +35,14 @@ class PreferenceHelper(context: Context) {
         } catch (e: Exception) {
             Logger.log("PreferenceHelper", "saveWeather: weatherResponse wasn't stored", e)
         }
+    }
+
+    fun getColorNumber(widgetId: Int): Int {
+        return sharedPreferences.getInt(WIDGET_COLOR_NUMBER + widgetId, 0)
+    }
+
+    fun saveColorNumber(widgetId: Int, colorNumber: Int) {
+        sharedPreferences.edit().putInt(WIDGET_COLOR_NUMBER + widgetId, colorNumber).apply()
     }
 
 }

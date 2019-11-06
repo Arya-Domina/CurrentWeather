@@ -5,6 +5,7 @@ import android.util.SparseArray
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.example.currentweather.Constants.Companion.TIME_FORMAT
 import com.example.currentweather.R
 import com.example.currentweather.models.WeatherResponse
 import com.example.currentweather.util.convertDegreeToDirection
@@ -71,9 +72,7 @@ class DetailsListAdapter : RecyclerView.Adapter<DetailsListHolder>() {
         weather.date?.let {
             newArray.put(
                 R.string.time_name,
-                SimpleDateFormat(
-                    context.resources.getString(R.string.time_format), Locale.getDefault()
-                ).format(it * 1000)
+                SimpleDateFormat(TIME_FORMAT, Locale.getDefault()).format(it * 1000)
             )
         }
         weather.sunrise?.let { sunrise ->
@@ -81,12 +80,8 @@ class DetailsListAdapter : RecyclerView.Adapter<DetailsListHolder>() {
                 newArray.put(
                     R.string.sun_name, context.resources.getString(
                         R.string.sun_format,
-                        SimpleDateFormat(
-                            context.resources.getString(R.string.time_format), Locale.getDefault()
-                        ).format(sunrise * 1000),
-                        SimpleDateFormat(
-                            context.resources.getString(R.string.time_format), Locale.getDefault()
-                        ).format(sunset * 1000)
+                        SimpleDateFormat(TIME_FORMAT, Locale.getDefault()).format(sunrise * 1000),
+                        SimpleDateFormat(TIME_FORMAT, Locale.getDefault()).format(sunset * 1000)
                     )
                 )
             }
