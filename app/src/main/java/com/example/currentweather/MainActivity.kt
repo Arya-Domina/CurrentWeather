@@ -75,15 +75,17 @@ class MainActivity : AppCompatActivity() {
             }
             false
         }
-        shadow_view.setOnClickListener {
-            showCityLabel()
+        layout.setOnClickListener {
+            if (edit_city.visibility == View.VISIBLE) {
+                showCityLabel()
+            }
         }
     }
 
     private fun showCityLabel() {
         city_name.visibility = View.VISIBLE
         edit_city.visibility = View.INVISIBLE
-        shadow_view.visibility = View.GONE
+        layout.setBackgroundResource(R.color.background)
         input.hideSoftInputFromWindow(container.windowToken, InputMethodManager.HIDE_NOT_ALWAYS)
 
         mainViewModel.changeCity(edit_city.text.toString().trim())
@@ -95,7 +97,7 @@ class MainActivity : AppCompatActivity() {
         edit_city.visibility = View.VISIBLE
         edit_city.requestFocus()
         edit_city.selectAll()
-        shadow_view.visibility = View.VISIBLE
+        layout.setBackgroundResource(R.color.shadow_background)
         input.showSoftInput(edit_city, InputMethodManager.SHOW_IMPLICIT)
     }
 
