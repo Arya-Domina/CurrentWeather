@@ -9,10 +9,12 @@ import android.content.Intent
 import android.widget.RemoteViews
 import com.example.currentweather.Constants.Companion.ACTION_UPDATE_APPWIDGET
 import com.example.currentweather.Constants.Companion.BLUE_NUMBER
+import com.example.currentweather.Constants.Companion.DOUBLE_CLICK_DELAY
 import com.example.currentweather.Constants.Companion.EXTRA_ID_APPWIDGET
 import com.example.currentweather.Constants.Companion.GREEN_NUMBER
 import com.example.currentweather.Constants.Companion.RED_NUMBER
 import com.example.currentweather.Constants.Companion.TIME_FORMAT
+import com.example.currentweather.MainActivity
 import com.example.currentweather.R
 import com.example.currentweather.models.Params
 import com.example.currentweather.repository.WeatherRepository
@@ -45,11 +47,23 @@ class WeatherWidgetProvider : AppWidgetProvider(), KoinComponent {
             && intent?.action.equals(ACTION_UPDATE_APPWIDGET)
             && intent?.hasExtra(EXTRA_ID_APPWIDGET) == true
         ) {
-            updateWidget(
-                context,
-                AppWidgetManager.getInstance(context),
-                intent.getIntExtra(EXTRA_ID_APPWIDGET, 0)
-            )
+            val time = Date().time
+            val lastTime = preferenceHelper.getLastTime()
+            if (time - lastTime > DOUBLE_CLICK_DELAY) {
+                Logger.log("WeatherWidgetProvider", "onReceive, more")
+                preferenceHelper.saveLastTime(time)
+
+                updateWidget(
+                    context,
+                    AppWidgetManager.getInstance(context),
+                    intent.getIntExtra(EXTRA_ID_APPWIDGET, 0)
+                )
+            } else {
+                Logger.log("WeatherWidgetProvider", "onReceive, less")
+
+                val intentMain = Intent(context, MainActivity::class.java)
+                context.startActivity(intentMain)
+            }
         }
     }
 

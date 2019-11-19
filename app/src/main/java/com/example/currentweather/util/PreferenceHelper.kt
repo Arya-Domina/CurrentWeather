@@ -12,6 +12,7 @@ class PreferenceHelper(context: Context) {
     companion object {
         private const val WEATHER = "weather"
         private const val WIDGET_COLOR_NUMBER = "widget_color_"
+        private const val WIDGET_LAST_TIME = "widget_time"
     }
 
     private val sharedPreferences: SharedPreferences =
@@ -44,6 +45,14 @@ class PreferenceHelper(context: Context) {
 
     fun saveColorNumber(widgetId: Int, colorNumber: Int) {
         sharedPreferences.edit().putInt(WIDGET_COLOR_NUMBER + widgetId, colorNumber).apply()
+    }
+
+    fun getLastTime(): Long {
+        return sharedPreferences.getLong(WIDGET_LAST_TIME, 0L)
+    }
+
+    fun saveLastTime(time: Long) {
+        sharedPreferences.edit().putLong(WIDGET_LAST_TIME, time).apply()
     }
 
 }

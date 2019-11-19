@@ -16,5 +16,6 @@ class Constants {
         const val BLUE_NUMBER = 3
         const val ACTION_UPDATE_APPWIDGET = "action.UPDATE_WIDGET"
         const val EXTRA_ID_APPWIDGET = "extra.ID_WIDGET"
+        const val DOUBLE_CLICK_DELAY = 1000L
     }
 }
