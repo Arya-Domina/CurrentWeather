@@ -63,19 +63,21 @@ class WeatherWidgetProvider : AppWidgetProvider(), KoinComponent {
             .subscribe({ response ->
                 Logger.log("WeatherWidgetProvider", "updateWidget response: $response")
                 update(
-                    context, manager, widgetId, response.temperature, response.date, colorNumber
+                    context, manager, widgetId,
+                    response.cityName, response.temperature, response.date, colorNumber
                 )
             }, {
                 Logger.log("WeatherWidgetProvider", "updateWidget err", it)
                 update(
-                    context, manager, widgetId, oldWeather.temperature, oldWeather.date, colorNumber
+                    context, manager, widgetId,
+                    oldWeather.cityName, oldWeather.temperature, oldWeather.date, colorNumber
                 )
             })
     }
 
     private fun update(
         context: Context, manager: AppWidgetManager, widgetId: Int,
-        temperature: Double?, date: Long?, colorNumber: Int? = null
+        city: String?, temperature: Double?, date: Long?, colorNumber: Int? = null
     ) {
         val temperatureText = if (temperature != null) {
             context.resources.getString(R.string.temperature_widget, temperature.convertKtoC())
@@ -89,11 +91,17 @@ class WeatherWidgetProvider : AppWidgetProvider(), KoinComponent {
         }
 
         RemoteViews(context.packageName, R.layout.weather_widget)
+            .upCityName(city)
             .upWeather(temperatureText)
             .upTime(timeText)
             .setOnClick(context, widgetId)
             .setColor(colorNumber ?: preferenceHelper.getColorNumber(widgetId))
             .upWidget(manager, widgetId)
+    }
+
+    private fun RemoteViews.upCityName(city: String?): RemoteViews {
+        this.setTextViewText(R.id.city_name, city)
+        return this
     }
 
     private fun RemoteViews.upWeather(temperature: String): RemoteViews {
