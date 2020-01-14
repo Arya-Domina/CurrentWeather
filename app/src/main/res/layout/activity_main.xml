@@ -43,21 +43,15 @@
             app:layout_constraintStart_toStartOf="@+id/city_name"
             app:layout_constraintTop_toTopOf="@+id/city_name" />
 
-        <ImageView
-            android:id="@+id/loading_view"
+        <ProgressBar
+            android:id="@+id/progress_bar"
             android:layout_width="@dimen/loading_size"
             android:layout_height="@dimen/loading_size"
             android:layout_marginBottom="2dp"
-            android:tint="@color/city_color"
+            android:theme="@style/CircularProgress.Activity"
             app:layout_constraintBottom_toBottomOf="@+id/city_name"
             app:layout_constraintEnd_toStartOf="@+id/city_name"
-            app:layout_constraintTop_toTopOf="@+id/city_name"
-            app:srcCompat="@drawable/ic_reload" />
-        <!--
-            app:srcCompat="@drawable/ic_reload"
-            app:srcCompat="@android:drawable/ic_popup_sync"
-            app:srcCompat="@android:drawable/stat_notify_sync"
-        -->
+            app:layout_constraintTop_toTopOf="@+id/city_name" />
 
         <TextView
             android:id="@+id/temperature"

@@ -1,9 +1,5 @@
 package com.example.currentweather.util
 
-import android.view.animation.Animation
-import android.view.animation.LinearInterpolator
-import android.view.animation.RotateAnimation
-import android.widget.ImageView
 import com.example.currentweather.R
 
 fun Double.convertKtoC(): Double = this - 273.15
@@ -27,22 +23,4 @@ fun Int?.convertDegreeToDirection(): Int {
         Logger.log("Util", "convertDegreeToDirection: err", e)
         R.string.wind_direction_un
     }
-}
-
-fun ImageView.startRotateAnimation() {
-    val animation = RotateAnimation(
-        0f, 360f,
-        Animation.RELATIVE_TO_SELF, 0.5f,
-        Animation.RELATIVE_TO_SELF, 0.5f
-    )
-    animation.interpolator = LinearInterpolator()
-    animation.duration = 1300
-    animation.repeatCount = -1
-    animation.repeatMode = Animation.RESTART
-
-    this.startAnimation(animation)
-}
-
-fun ImageView.stopAnimation() {
-    this.clearAnimation()
 }
