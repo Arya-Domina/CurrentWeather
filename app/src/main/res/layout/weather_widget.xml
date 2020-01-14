@@ -24,6 +24,14 @@
         android:textColor="@android:color/black"
         android:textSize="@dimen/widget_temperature" />
 
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        android:layout_width="@dimen/widget_loading_view"
+        android:layout_height="@dimen/widget_loading_view"
+        android:layout_gravity="center"
+        android:paddingBottom="@dimen/widget_margin"
+        android:theme="@style/CircularProgress.Widget" />
+
     <TextView
         android:id="@+id/update_time_text"
         android:layout_width="wrap_content"

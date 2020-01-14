@@ -60,6 +60,14 @@ class MainActivity : AppCompatActivity() {
 
             (recycler_view.adapter as DetailsListAdapter).updateInfo(this, weather)
         })
+
+        mainViewModel.isLoadingNow.observe(this, Observer {
+            if (it) {
+                progress_bar.visibility = View.VISIBLE
+            } else {
+                progress_bar.visibility = View.INVISIBLE
+            }
+        })
     }
 
     private fun setListeners() {

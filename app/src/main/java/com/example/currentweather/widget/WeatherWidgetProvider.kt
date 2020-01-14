@@ -6,6 +6,7 @@ import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.Context
 import android.content.Intent
+import android.view.View
 import android.widget.RemoteViews
 import com.example.currentweather.Constants.Companion.ACTION_UPDATE_APPWIDGET
 import com.example.currentweather.Constants.Companion.BLUE_NUMBER
@@ -73,6 +74,11 @@ class WeatherWidgetProvider : AppWidgetProvider(), KoinComponent {
     ) {
         if (colorNumber != null) preferenceHelper.saveColorNumber(widgetId, colorNumber)
         val oldWeather = preferenceHelper.getWeather()
+
+        RemoteViews(context.packageName, R.layout.weather_widget)
+            .showLoad()
+            .upWidget(manager, widgetId)
+
         repository.getCurrentWeather(Pair(Params.CityName, oldWeather.cityName), false)
             .subscribe({ response ->
                 Logger.log("WeatherWidgetProvider", "updateWidget response: $response")
@@ -110,6 +116,7 @@ class WeatherWidgetProvider : AppWidgetProvider(), KoinComponent {
             .upTime(timeText)
             .setOnClick(context, widgetId)
             .setColor(colorNumber ?: preferenceHelper.getColorNumber(widgetId))
+            .showTemp()
             .upWidget(manager, widgetId)
     }
 
@@ -150,6 +157,18 @@ class WeatherWidgetProvider : AppWidgetProvider(), KoinComponent {
                 PendingIntent.FLAG_UPDATE_CURRENT
             )
         )
+        return this
+    }
+
+    private fun RemoteViews.showTemp(): RemoteViews {
+        this.setViewVisibility(R.id.progress_bar, View.INVISIBLE)
+        this.setViewVisibility(R.id.weather_text, View.VISIBLE)
+        return this
+    }
+
+    private fun RemoteViews.showLoad(): RemoteViews {
+        this.setViewVisibility(R.id.progress_bar, View.VISIBLE)
+        this.setViewVisibility(R.id.weather_text, View.INVISIBLE)
         return this
     }
 

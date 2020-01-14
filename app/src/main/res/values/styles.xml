@@ -8,4 +8,12 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="CircularProgress.Activity" parent="Theme.AppCompat.Light">
+        <item name="colorAccent">@color/city_color</item>
+    </style>
+
+    <style name="CircularProgress.Widget" parent="Theme.AppCompat.Light">
+        <item name="colorAccent">@android:color/black</item>
+    </style>
+
 </resources>

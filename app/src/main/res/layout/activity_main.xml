@@ -43,6 +43,15 @@
             app:layout_constraintStart_toStartOf="@+id/city_name"
             app:layout_constraintTop_toTopOf="@+id/city_name" />
 
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            android:layout_width="@dimen/loading_size"
+            android:layout_height="@dimen/loading_size"
+            android:layout_marginBottom="2dp"
+            android:theme="@style/CircularProgress.Activity"
+            app:layout_constraintBottom_toBottomOf="@+id/city_name"
+            app:layout_constraintEnd_toStartOf="@+id/city_name"
+            app:layout_constraintTop_toTopOf="@+id/city_name" />
 
         <TextView
             android:id="@+id/temperature"
