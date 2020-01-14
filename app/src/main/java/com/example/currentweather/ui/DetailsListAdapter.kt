@@ -20,6 +20,15 @@ class DetailsListAdapter : RecyclerView.Adapter<DetailsListHolder>() {
             notifyDataSetChanged()
         }
 
+    private var orderedNameList = listOf(
+        R.string.time_name,
+        R.string.wind_name,
+        R.string.sun_name,
+        R.string.humidity_name,
+        R.string.clouds_name,
+        R.string.pressure_name
+    )
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DetailsListHolder {
         return DetailsListHolder(
             LayoutInflater.from(parent.context)
@@ -32,7 +41,8 @@ class DetailsListAdapter : RecyclerView.Adapter<DetailsListHolder>() {
     }
 
     override fun onBindViewHolder(holder: DetailsListHolder, position: Int) {
-        holder.bind(array.keyAt(position), array.valueAt(position))
+        val key = orderedNameList[position]
+        holder.bind(key, array[key])
     }
 
     fun updateInfo(context: Context, weather: WeatherResponse) {
@@ -78,7 +88,8 @@ class DetailsListAdapter : RecyclerView.Adapter<DetailsListHolder>() {
         weather.sunrise?.let { sunrise ->
             weather.sunset?.let { sunset ->
                 newArray.put(
-                    R.string.sun_name, context.resources.getString(
+                    R.string.sun_name,
+                    context.resources.getString(
                         R.string.sun_format,
                         SimpleDateFormat(TIME_FORMAT, Locale.getDefault()).format(sunrise * 1000),
                         SimpleDateFormat(TIME_FORMAT, Locale.getDefault()).format(sunset * 1000)

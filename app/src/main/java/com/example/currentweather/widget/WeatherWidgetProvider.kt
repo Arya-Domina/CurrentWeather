@@ -9,10 +9,12 @@ import android.content.Intent
 import android.widget.RemoteViews
 import com.example.currentweather.Constants.Companion.ACTION_UPDATE_APPWIDGET
 import com.example.currentweather.Constants.Companion.BLUE_NUMBER
+import com.example.currentweather.Constants.Companion.DOUBLE_CLICK_DELAY
 import com.example.currentweather.Constants.Companion.EXTRA_ID_APPWIDGET
 import com.example.currentweather.Constants.Companion.GREEN_NUMBER
 import com.example.currentweather.Constants.Companion.RED_NUMBER
 import com.example.currentweather.Constants.Companion.TIME_FORMAT
+import com.example.currentweather.MainActivity
 import com.example.currentweather.R
 import com.example.currentweather.models.Params
 import com.example.currentweather.repository.WeatherRepository
@@ -45,11 +47,23 @@ class WeatherWidgetProvider : AppWidgetProvider(), KoinComponent {
             && intent?.action.equals(ACTION_UPDATE_APPWIDGET)
             && intent?.hasExtra(EXTRA_ID_APPWIDGET) == true
         ) {
-            updateWidget(
-                context,
-                AppWidgetManager.getInstance(context),
-                intent.getIntExtra(EXTRA_ID_APPWIDGET, 0)
-            )
+            val time = Date().time
+            val lastTime = preferenceHelper.getLastTime()
+            if (time - lastTime > DOUBLE_CLICK_DELAY) {
+                Logger.log("WeatherWidgetProvider", "onReceive, more")
+                preferenceHelper.saveLastTime(time)
+
+                updateWidget(
+                    context,
+                    AppWidgetManager.getInstance(context),
+                    intent.getIntExtra(EXTRA_ID_APPWIDGET, 0)
+                )
+            } else {
+                Logger.log("WeatherWidgetProvider", "onReceive, less")
+
+                val intentMain = Intent(context, MainActivity::class.java)
+                context.startActivity(intentMain)
+            }
         }
     }
 
@@ -63,19 +77,21 @@ class WeatherWidgetProvider : AppWidgetProvider(), KoinComponent {
             .subscribe({ response ->
                 Logger.log("WeatherWidgetProvider", "updateWidget response: $response")
                 update(
-                    context, manager, widgetId, response.temperature, response.date, colorNumber
+                    context, manager, widgetId,
+                    response.cityName, response.temperature, response.date, colorNumber
                 )
             }, {
                 Logger.log("WeatherWidgetProvider", "updateWidget err", it)
                 update(
-                    context, manager, widgetId, oldWeather.temperature, oldWeather.date, colorNumber
+                    context, manager, widgetId,
+                    oldWeather.cityName, oldWeather.temperature, oldWeather.date, colorNumber
                 )
             })
     }
 
     private fun update(
         context: Context, manager: AppWidgetManager, widgetId: Int,
-        temperature: Double?, date: Long?, colorNumber: Int? = null
+        city: String?, temperature: Double?, date: Long?, colorNumber: Int? = null
     ) {
         val temperatureText = if (temperature != null) {
             context.resources.getString(R.string.temperature_widget, temperature.convertKtoC())
@@ -89,11 +105,17 @@ class WeatherWidgetProvider : AppWidgetProvider(), KoinComponent {
         }
 
         RemoteViews(context.packageName, R.layout.weather_widget)
+            .upCityName(city)
             .upWeather(temperatureText)
             .upTime(timeText)
             .setOnClick(context, widgetId)
             .setColor(colorNumber ?: preferenceHelper.getColorNumber(widgetId))
             .upWidget(manager, widgetId)
+    }
+
+    private fun RemoteViews.upCityName(city: String?): RemoteViews {
+        this.setTextViewText(R.id.city_name, city)
+        return this
     }
 
     private fun RemoteViews.upWeather(temperature: String): RemoteViews {
