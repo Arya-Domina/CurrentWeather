@@ -10,6 +10,7 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.currentweather.ui.DetailsListAdapter
 import com.example.currentweather.util.convertKtoC
+import com.example.currentweather.util.startRotateAnimation
 import kotlinx.android.synthetic.main.activity_main.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -59,6 +60,18 @@ class MainActivity : AppCompatActivity() {
                 weather.weatherDescription ?: resources.getString(R.string.unknown_city)
 
             (recycler_view.adapter as DetailsListAdapter).updateInfo(this, weather)
+        })
+
+        mainViewModel.isLoadingNow.observe(this, Observer {
+            if (it) {
+                loading_view.visibility = View.VISIBLE
+                loading_view.startRotateAnimation()
+//                loading_view.setBackgroundResource(R.drawable.load)
+//                (loading_view.background as AnimationDrawable).start()
+            } else {
+                loading_view.visibility = View.INVISIBLE
+                loading_view.clearAnimation()
+            }
         })
     }
 

@@ -13,6 +13,7 @@ class MainViewModel(
 ) : ViewModel() {
 
     val weatherData = MutableLiveData<WeatherResponse>()
+    val isLoadingNow = MutableLiveData<Boolean>(false)
     private val compositeDisposable: CompositeDisposable by lazy { CompositeDisposable() }
 
     init {
@@ -30,12 +31,17 @@ class MainViewModel(
     }
 
     private fun updateWeather(newCityName: String? = null) {
+        isLoadingNow.value = true
         val disposable = repository.getCurrentWeather(Pair(Params.CityName, newCityName))
             .subscribe({
                 Logger.log("MainViewModel", "updateWeather: $it")
-                weatherData.value = it
+//                weatherData.value = it
+                weatherData.postValue(it)
+//                isLoadingNow.value = false
+                isLoadingNow.postValue(false)
             }, {
                 Logger.log("MainViewModel", "updateWeather: err", it)
+                isLoadingNow.value = false
             })
         compositeDisposable.addAll(disposable)
     }
