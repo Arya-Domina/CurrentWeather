@@ -35,13 +35,12 @@ class MainViewModel(
         val disposable = repository.getCurrentWeather(Pair(Params.CityName, newCityName))
             .subscribe({
                 Logger.log("MainViewModel", "updateWeather: $it")
-//                weatherData.value = it
                 weatherData.postValue(it)
-//                isLoadingNow.value = false
-                isLoadingNow.postValue(false)
             }, {
                 Logger.log("MainViewModel", "updateWeather: err", it)
-                isLoadingNow.value = false
+                isLoadingNow.postValue(false)
+            }, {
+                isLoadingNow.postValue(false)
             })
         compositeDisposable.addAll(disposable)
     }

@@ -6,6 +6,7 @@ import com.example.currentweather.models.Params
 import com.example.currentweather.models.WeatherResponse
 import com.example.currentweather.util.Logger
 import com.example.currentweather.util.PreferenceHelper
+import io.reactivex.Observable
 import io.reactivex.Single
 import org.koin.core.KoinComponent
 import org.koin.core.inject
@@ -21,33 +22,47 @@ class WeatherRepository : KoinComponent {
 
     fun getCurrentWeather(
         param: Pair<Params, Any?>, errorProcessing: Boolean = true
-    ): Single<WeatherResponse> {
-        var oldWeather = WeatherResponse()
-        val single = getLocalWeather()
-            .flatMap {
-                oldWeather = it
+    ): Observable<WeatherResponse> {
+
+        return Observable.create { emitter ->
+            Logger.log("WeatherRepository", "obs create")
+
+            getLocalWeather().subscribe({ response ->
+                Logger.log("WeatherRepository", "obs getLocalWeather")
+
                 val second = if (param.second == null) {
-                    it.getSavedParameter(param.first)
+                    response.getSavedParameter(param.first)
                 } else {
                     param.second!!
                 }
                 val p: Pair<Params, Any> = Pair(param.first, second)
-                if (isParamMath(p, it) && !isTimePassed(it.date))
-                    Single.just(it)
-                else getNetworkWeather(p)
-            }
-            .doOnSuccess {
-                preferenceHelper.saveWeather(it)
-            }
-        return if (errorProcessing) {
-            single.onErrorReturn {
-                if (it is UnknownHostException) { // no connection
-                    oldWeather
-                } else if (it is HttpException && param.first == Params.CityName) { // wrong city name
-                    WeatherResponse(cityName = param.second as String)
-                } else WeatherResponse()
-            }
-        } else single
+                Logger.log("WeatherRepository", "p: (${p.first}, ${p.second})")
+                emitter.onNext(response)
+
+                val math = !isParamMath(p, response)
+                val time = isTimePassed(response.date)
+                Logger.log("WeatherRepository", "$math")
+                Logger.log("WeatherRepository", "$time")
+
+                if (!isParamMath(p, response) || isTimePassed(response.date)) {
+                    getNetworkWeather(p).subscribe({ secondResponse ->
+                        Logger.log("WeatherRepository", "obs getNetworkWeather")
+                        preferenceHelper.saveWeather(secondResponse)
+                        emitter.onNext(secondResponse)
+                        emitter.onComplete()
+                    }, { throwable ->
+//                        if (throwable is UnknownHostException) { // no connection
+//                            oldWeather
+//                        } else if (throwable is HttpException && param.first == Params.CityName) { // wrong city name
+//                            WeatherResponse(cityName = param.second as String)
+//                        } else WeatherResponse()
+                        emitter.onError(throwable)
+                    })
+                } else {
+                    emitter.onComplete()
+                }
+            }, {})
+        }
     }
 
     private fun WeatherResponse.getSavedParameter(params: Params): Any {
