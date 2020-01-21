@@ -73,13 +73,12 @@ class WeatherWidgetProvider : AppWidgetProvider(), KoinComponent {
         context: Context, manager: AppWidgetManager, widgetId: Int, colorNumber: Int? = null
     ) {
         if (colorNumber != null) preferenceHelper.saveColorNumber(widgetId, colorNumber)
-        val oldWeather = preferenceHelper.getWeather()
 
         RemoteViews(context.packageName, R.layout.weather_widget)
             .showLoad()
             .upWidget(manager, widgetId)
 
-        repository.getCurrentWeather(Pair(Params.CityName, oldWeather.cityName), false)
+        repository.getCurrentWeather(Pair(Params.CityName, preferenceHelper.getWeather().cityName))
             .subscribe({ response ->
                 Logger.log("WeatherWidgetProvider", "updateWidget response: $response")
                 update(
@@ -88,10 +87,14 @@ class WeatherWidgetProvider : AppWidgetProvider(), KoinComponent {
                 )
             }, {
                 Logger.log("WeatherWidgetProvider", "updateWidget err", it)
-                update(
-                    context, manager, widgetId,
-                    oldWeather.cityName, oldWeather.temperature, oldWeather.date, colorNumber
-                )
+                RemoteViews(context.packageName, R.layout.weather_widget)
+                    .showTemp()
+                    .upWidget(manager, widgetId)
+            }, {
+                Logger.log("WeatherWidgetProvider", "updateWidget onComplete")
+                RemoteViews(context.packageName, R.layout.weather_widget)
+                    .showTemp()
+                    .upWidget(manager, widgetId)
             })
     }
 
@@ -116,7 +119,6 @@ class WeatherWidgetProvider : AppWidgetProvider(), KoinComponent {
             .upTime(timeText)
             .setOnClick(context, widgetId)
             .setColor(colorNumber ?: preferenceHelper.getColorNumber(widgetId))
-            .showTemp()
             .upWidget(manager, widgetId)
     }
 

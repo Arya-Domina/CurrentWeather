@@ -68,6 +68,9 @@ class MainActivity : AppCompatActivity() {
                 progress_bar.visibility = View.INVISIBLE
             }
         })
+        mainViewModel.errorStringRes.observe(this, Observer { stringRes ->
+            error_text.setText(stringRes)
+        })
     }
 
     private fun setListeners() {
