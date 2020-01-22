@@ -48,10 +48,10 @@ class WeatherRepository : KoinComponent {
                     }, { throwable ->
                         val th =
                             when (throwable) {
-                                is IOException -> WeatherException(R.string.err_no_connection)
+                                is IOException -> WeatherException(throwable, R.string.err_no_connection)
                                 // UnknownHostException || SocketTimeoutException // timeout || NoRouteToHostException // No route to host
-                                is HttpException -> WeatherException(R.string.err_wrong_city_name) // && param.first == Params.CityName
-                                else -> WeatherException(R.string.err_unknown)
+                                is HttpException -> WeatherException(throwable, R.string.err_wrong_city_name) // && param.first == Params.CityName
+                                else -> WeatherException(throwable, R.string.err_unknown)
                             }
                         emitter.onError(th)
                     })

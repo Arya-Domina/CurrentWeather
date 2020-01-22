@@ -4,7 +4,7 @@
     <!-- Main info -->
     <string name="enter_city">Enter city</string>
     <string name="temperature_degree" translatable="false">%.1f°</string>
-    <string name="unknown_city">Unknown city</string>
+    <string name="no_data">No data</string>
     <string name="nan" translatable="false">NaN</string>
 
     <!-- Error message -->

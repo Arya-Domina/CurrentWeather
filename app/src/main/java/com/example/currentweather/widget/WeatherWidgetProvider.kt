@@ -110,7 +110,7 @@ class WeatherWidgetProvider : AppWidgetProvider(), KoinComponent {
         val timeText = if (date != null) {
             SimpleDateFormat(TIME_FORMAT, Locale.getDefault()).format(date * 1000)
         } else {
-            context.resources.getString(R.string.unknown_city)
+            context.resources.getString(R.string.no_data)
         }
 
         RemoteViews(context.packageName, R.layout.weather_widget)

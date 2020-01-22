@@ -5,7 +5,7 @@ import com.example.currentweather.R
 fun Double.convertKtoC(): Double = this - 273.15
 
 fun Int?.convertDegreeToDirection(): Int {
-    if (this == null) return R.string.wind_direction_un
+    if (this == null) return R.string.empty
     val listDirections = listOf(
         R.string.wind_direction_n,
         R.string.wind_direction_ne,
@@ -21,6 +21,6 @@ fun Int?.convertDegreeToDirection(): Int {
         listDirections[(this + 22.5).div(45).toInt()]
     } catch (e: IndexOutOfBoundsException) {
         Logger.log("Util", "convertDegreeToDirection: err", e)
-        R.string.wind_direction_un
+        R.string.empty
     }
 }

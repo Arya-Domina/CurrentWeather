@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="enter_city">Введите город</string>
-    <string name="unknown_city">Неизвестный город</string>
+    <string name="no_data">Нет данных</string>
 
     <string name="err_unknown">Непонятная ошибка</string>
     <string name="err_wrong_city_name">Некорректное название города</string>

@@ -51,52 +51,47 @@ class DetailsListAdapter : RecyclerView.Adapter<DetailsListHolder>() {
 
     private fun createArray(context: Context, weather: WeatherResponse): SparseArray<String> {
         val newArray = SparseArray<String>()
-        if (weather.windSpeed != null && weather.windDegree != null) {
-            newArray.put(
-                R.string.wind_name,
+        newArray.put(
+            R.string.wind_name,
+            weather.windSpeed?.let {
                 context.resources.getString(
                     R.string.wind_format,
                     weather.windSpeed,
                     context.resources.getString(weather.windDegree.convertDegreeToDirection())
                 )
-            )
-        }
-        weather.pressure?.let {
-            newArray.put(
-                R.string.pressure_name,
-                context.resources.getString(R.string.pressure_format, it)
-            )
-        }
-        weather.humidity?.let {
-            newArray.put(
-                R.string.humidity_name,
-                context.resources.getString(R.string.humidity_format, it)
-            )
-        }
-        weather.clouds?.let {
-            newArray.put(
-                R.string.clouds_name,
-                context.resources.getString(R.string.clouds_format, it)
-            )
-        }
-        weather.date?.let {
-            newArray.put(
-                R.string.time_name,
+            }
+        )
+        newArray.put(
+            R.string.pressure_name,
+            context.resources.getString(R.string.pressure_format, weather.pressure)
+        )
+        newArray.put(
+            R.string.humidity_name,
+            context.resources.getString(R.string.humidity_format, weather.humidity)
+        )
+        newArray.put(
+            R.string.clouds_name,
+            context.resources.getString(R.string.clouds_format, weather.clouds)
+        )
+        newArray.put(
+            R.string.time_name,
+            weather.date?.let {
                 SimpleDateFormat(TIME_FORMAT, Locale.getDefault()).format(it * 1000)
-            )
-        }
-        weather.sunrise?.let { sunrise ->
-            weather.sunset?.let { sunset ->
-                newArray.put(
-                    R.string.sun_name,
+            }
+        )
+
+        newArray.put(
+            R.string.sun_name,
+            weather.sunrise?.let { sunrise ->
+                weather.sunset?.let { sunset ->
                     context.resources.getString(
                         R.string.sun_format,
                         SimpleDateFormat(TIME_FORMAT, Locale.getDefault()).format(sunrise * 1000),
                         SimpleDateFormat(TIME_FORMAT, Locale.getDefault()).format(sunset * 1000)
                     )
-                )
+                }
             }
-        }
+        )
         return newArray
     }
 
