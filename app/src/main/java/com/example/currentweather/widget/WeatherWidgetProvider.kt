@@ -26,6 +26,7 @@ import org.koin.core.KoinComponent
 import org.koin.core.inject
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 class WeatherWidgetProvider : AppWidgetProvider(), KoinComponent {
 
@@ -36,7 +37,8 @@ class WeatherWidgetProvider : AppWidgetProvider(), KoinComponent {
         Logger.log("WeatherWidgetProvider", "onUpdate")
         widgetIds.forEach { widgetId ->
             Logger.log("WeatherWidgetProvider", "id: $widgetId")
-            updateWidget(context, manager, widgetId)
+            if (preferenceHelper.hasColorNumber(widgetId))
+                updateWidget(context, manager, widgetId)
         }
         super.onUpdate(context, manager, widgetIds)
     }
@@ -79,6 +81,7 @@ class WeatherWidgetProvider : AppWidgetProvider(), KoinComponent {
             .upWidget(manager, widgetId)
 
         repository.getCurrentWeather(Pair(Params.CityName, preferenceHelper.getWeather().cityName))
+            .delay(500, TimeUnit.MILLISECONDS)
             .subscribe({ response ->
                 Logger.log("WeatherWidgetProvider", "updateWidget response: $response")
                 update(
@@ -87,14 +90,10 @@ class WeatherWidgetProvider : AppWidgetProvider(), KoinComponent {
                 )
             }, {
                 Logger.log("WeatherWidgetProvider", "updateWidget err", it)
-                RemoteViews(context.packageName, R.layout.weather_widget)
-                    .showTemp()
-                    .upWidget(manager, widgetId)
+                hideProgressBar(context, manager, widgetId)
             }, {
                 Logger.log("WeatherWidgetProvider", "updateWidget onComplete")
-                RemoteViews(context.packageName, R.layout.weather_widget)
-                    .showTemp()
-                    .upWidget(manager, widgetId)
+                hideProgressBar(context, manager, widgetId)
             })
     }
 
@@ -119,6 +118,12 @@ class WeatherWidgetProvider : AppWidgetProvider(), KoinComponent {
             .upTime(timeText)
             .setOnClick(context, widgetId)
             .setColor(colorNumber ?: preferenceHelper.getColorNumber(widgetId))
+            .upWidget(manager, widgetId)
+    }
+
+    private fun hideProgressBar(context: Context, manager: AppWidgetManager, widgetId: Int) {
+        RemoteViews(context.packageName, R.layout.weather_widget)
+            .showTemp()
             .upWidget(manager, widgetId)
     }
 
