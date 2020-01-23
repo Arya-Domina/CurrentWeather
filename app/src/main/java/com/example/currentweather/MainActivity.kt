@@ -51,12 +51,12 @@ class MainActivity : AppCompatActivity() {
 
     private fun subscribe() {
         mainViewModel.weatherData.observe(this, Observer { weather ->
-            city_name.text = weather.cityName ?: resources.getString(R.string.unknown_city)
+            city_name.text = weather.cityName ?: resources.getString(R.string.no_data)
             temperature.text = weather.temperature?.let {
                 resources.getString(R.string.temperature_degree, it.convertKtoC())
             } ?: resources.getString(R.string.nan)
             description.text =
-                weather.weatherDescription ?: resources.getString(R.string.unknown_city)
+                weather.weatherDescription ?: resources.getString(R.string.no_data)
 
             (recycler_view.adapter as DetailsListAdapter).updateInfo(this, weather)
         })
@@ -67,6 +67,9 @@ class MainActivity : AppCompatActivity() {
             } else {
                 progress_bar.visibility = View.INVISIBLE
             }
+        })
+        mainViewModel.errorStringRes.observe(this, Observer { stringRes ->
+            error_text.setText(stringRes)
         })
     }
 
