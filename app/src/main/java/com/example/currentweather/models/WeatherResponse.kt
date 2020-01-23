@@ -1,27 +1,25 @@
 package com.example.currentweather.models
 
-import com.example.currentweather.Constants.Companion.DATE_TIME_FORMAT
-import java.text.SimpleDateFormat
-import java.util.*
+import com.example.currentweather.util.convertSecondToString
 
 class WeatherResponse(
-    var coordination: Coordination? = null,
-    var weatherMain: String? = null,
-    var weatherDescription: String? = null,
-    var temperature: Double? = null,
-    var pressure: Int? = null,
-    var humidity: Int? = null,
-    var visibility: Int? = null,
-    var windSpeed: Double? = null,
-    var windDegree: Int? = null,
-    var clouds: Int? = null,
-    var date: Long? = null,
-    var countryCode: String? = null,
-    var sunrise: Long? = null,
-    var sunset: Long? = null,
-    var timeZone: Long? = null,
-    var id: Long? = null,
-    var cityName: String? = null
+    val coordination: Coordination? = null,
+    val weatherMain: String? = null,
+    val weatherDescription: String? = null,
+    val temperature: Double? = null,
+    val pressure: Int? = null,
+    val humidity: Int? = null,
+    val visibility: Int? = null,
+    val windSpeed: Double? = null,
+    val windDegree: Int? = null,
+    val clouds: Int? = null,
+    val date: Long? = null,
+    val countryCode: String? = null,
+    val sunrise: Long? = null,
+    val sunset: Long? = null,
+    val timeZone: Long? = null,
+    val id: Long? = null,
+    val cityName: String? = null
 ) {
 
     override fun toString(): String {
@@ -36,22 +34,12 @@ class WeatherResponse(
                 "speed=$windSpeed, " +
                 "degree=$windDegree, " +
                 "clouds=$clouds, " +
-                "date=${date.convertToString()}, " +
+                "date=${date.convertSecondToString()}, " +
                 "country=$countryCode, " +
-                "sunrise=${sunrise.convertToString()}, " +
-                "sunset=${sunset.convertToString()}, " +
+                "sunrise=${sunrise.convertSecondToString()}, " +
+                "sunset=${sunset.convertSecondToString()}, " +
                 "timeZone=$timeZone, " +
                 "id=$id, " +
                 "cityName=$cityName)"
     }
-
-    private fun Long?.convertToString(): String? {
-        return this?.let {
-            SimpleDateFormat(DATE_TIME_FORMAT, Locale.getDefault())
-                .format(this.convertStoMS())
-        }
-    }
-
-    private fun Long.convertStoMS(): Long = this * 1000
-
 }

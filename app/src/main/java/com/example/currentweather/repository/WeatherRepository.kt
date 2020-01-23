@@ -2,10 +2,7 @@ package com.example.currentweather.repository
 
 import com.example.currentweather.Constants.Companion.INTERVAL
 import com.example.currentweather.R
-import com.example.currentweather.models.Coordination
-import com.example.currentweather.models.Params
-import com.example.currentweather.models.WeatherException
-import com.example.currentweather.models.WeatherResponse
+import com.example.currentweather.models.*
 import com.example.currentweather.util.Logger
 import com.example.currentweather.util.PreferenceHelper
 import io.reactivex.Observable
@@ -56,6 +53,11 @@ class WeatherRepository : KoinComponent {
                 }
             }, {})
         }
+    }
+
+    fun getForecast(cityName: String): Single<ForecastResponse> {
+        preferenceHelper.getWeather()
+        return networkRepo.getForecast(cityName)
     }
 
     private fun WeatherResponse.getSavedParameter(params: Params): Any {

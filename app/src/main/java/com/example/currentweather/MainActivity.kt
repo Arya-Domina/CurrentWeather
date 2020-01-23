@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.currentweather.ui.DetailsListAdapter
+import com.example.currentweather.util.Logger
 import com.example.currentweather.util.convertKtoC
 import kotlinx.android.synthetic.main.activity_main.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -70,6 +71,9 @@ class MainActivity : AppCompatActivity() {
         mainViewModel.errorStringRes.observe(this, Observer { stringRes ->
             error_text.setText(stringRes)
         })
+        mainViewModel.weatherForecast.observe(this, Observer {
+            Logger.log("MainActivity", "weather observe")
+        })
     }
 
     private fun setListeners() {
@@ -89,6 +93,9 @@ class MainActivity : AppCompatActivity() {
             if (edit_city.visibility == View.VISIBLE) {
                 showCityLabel()
             }
+        }
+        temperature.setOnClickListener { // temporary
+            mainViewModel.updateForecast(city_name.text.toString().trim())
         }
     }
 

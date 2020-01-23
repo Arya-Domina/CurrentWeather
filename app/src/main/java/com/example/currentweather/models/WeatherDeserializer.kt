@@ -3,10 +3,9 @@ package com.example.currentweather.models
 import com.google.gson.JsonDeserializationContext
 import com.google.gson.JsonDeserializer
 import com.google.gson.JsonElement
-import com.google.gson.JsonObject
 import java.lang.reflect.Type
 
-class WeatherDeserializer : JsonDeserializer<WeatherResponse> {
+class WeatherDeserializer : JsonDeserializer<WeatherResponse>, BaseDeserializer {
     override fun deserialize(
         json: JsonElement?,
         typeOfT: Type?,
@@ -38,53 +37,5 @@ class WeatherDeserializer : JsonDeserializer<WeatherResponse> {
             )
         }
         return weatherResponse
-    }
-
-    private fun JsonObject.getJsonArrayElement(memberName: String): JsonObject? {
-        return try {
-            this.get(memberName).asJsonArray[0].asJsonObject
-        } catch (th: Throwable) {
-            null
-        }
-    }
-
-    private fun JsonObject.getJsonObject(memberName: String): JsonObject? {
-        return try {
-            this.get(memberName).asJsonObject
-        } catch (th: Throwable) {
-            null
-        }
-    }
-
-    private fun JsonObject.getDouble(memberName: String): Double? {
-        return try {
-            this.get(memberName).asDouble
-        } catch (th: Throwable) {
-            null
-        }
-    }
-
-    private fun JsonObject.getInt(memberName: String): Int? {
-        return try {
-            this.get(memberName).asInt
-        } catch (th: Throwable) {
-            null
-        }
-    }
-
-    private fun JsonObject.getLong(memberName: String): Long? {
-        return try {
-            this.get(memberName).asLong
-        } catch (th: Throwable) {
-            null
-        }
-    }
-
-    private fun JsonObject.getString(memberName: String): String? {
-        return try {
-            this.get(memberName).asString
-        } catch (th: Throwable) {
-            null
-        }
     }
 }

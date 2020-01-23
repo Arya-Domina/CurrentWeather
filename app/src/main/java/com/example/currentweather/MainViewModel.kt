@@ -2,6 +2,7 @@ package com.example.currentweather
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.currentweather.models.ForecastResponse
 import com.example.currentweather.models.Params
 import com.example.currentweather.models.WeatherException
 import com.example.currentweather.models.WeatherResponse
@@ -13,6 +14,7 @@ class MainViewModel(
     private val repository: WeatherRepository
 ) : ViewModel() {
 
+    val weatherForecast = MutableLiveData<ForecastResponse>()
     val weatherData = MutableLiveData<WeatherResponse>()
     val isLoadingNow = MutableLiveData<Boolean>(false)
     val errorStringRes = MutableLiveData<Int>(R.string.empty)
@@ -48,6 +50,17 @@ class MainViewModel(
                 Logger.log("MainViewModel", "updateWeather: onComplete")
                 isLoadingNow.postValue(false)
                 errorStringRes.postValue(R.string.empty)
+            })
+        compositeDisposable.addAll(disposable)
+    }
+
+    fun updateForecast(cityName: String) {
+        val disposable = repository.getForecast(cityName)
+            .subscribe({
+                Logger.log("MainViewModel", "updateForecast: $it")
+                weatherForecast.postValue(it)
+            }, {
+                Logger.log("MainViewModel", "updateForecast: err", it)
             })
         compositeDisposable.addAll(disposable)
     }

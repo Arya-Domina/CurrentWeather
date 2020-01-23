@@ -1,6 +1,7 @@
 package com.example.currentweather.repository
 
 import com.example.currentweather.models.Coordination
+import com.example.currentweather.models.ForecastResponse
 import com.example.currentweather.models.Params
 import com.example.currentweather.models.WeatherResponse
 import com.example.currentweather.rest.ApiService
@@ -43,6 +44,12 @@ class NetworkRepository : IRepository, KoinComponent {
 
     private fun getCurrentWeather(coord: Coordination, language: String): Single<WeatherResponse> {
         return apiService.getCurrentWeather(coord.latitude, coord.longitude, language)
+    }
+
+    fun getForecast(cityName: String): Single<ForecastResponse> { // in interface
+        return apiService.getWeatherForecast(cityName, Locale.getDefault().language)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
     }
 
 }

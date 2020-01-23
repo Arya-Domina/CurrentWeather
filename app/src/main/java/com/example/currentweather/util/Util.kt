@@ -1,6 +1,9 @@
 package com.example.currentweather.util
 
+import com.example.currentweather.Constants
 import com.example.currentweather.R
+import java.text.SimpleDateFormat
+import java.util.*
 
 fun Double.convertKtoC(): Double = this - 273.15
 
@@ -24,3 +27,13 @@ fun Int?.convertDegreeToDirection(): Int {
         R.string.empty
     }
 }
+
+fun Long?.convertSecondToString(): String? {
+    return this?.let {
+        SimpleDateFormat(Constants.DATE_TIME_FORMAT, Locale.getDefault())
+            .format(this.convertStoMS())
+    }
+}
+
+private fun Long.convertStoMS(): Long = this * 1000
+
