@@ -39,6 +39,10 @@ class PreferenceHelper(context: Context) {
         }
     }
 
+    fun hasColorNumber(widgetId: Int): Boolean {
+        return (sharedPreferences.getInt(WIDGET_COLOR_NUMBER + widgetId, -1) != -1)
+    }
+
     fun getColorNumber(widgetId: Int): Int {
         return sharedPreferences.getInt(WIDGET_COLOR_NUMBER + widgetId, 0)
     }

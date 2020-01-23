@@ -26,7 +26,7 @@ class NetworkRepository : IRepository, KoinComponent {
                 else -> Single.error<WeatherResponse>(Throwable("No parameters exception"))
             }
         } catch (e: Exception) {
-            Logger.log("NetworkRepository", "getWeather: err")
+            Logger.log("NetworkRepository", "getWeather: err", e)
             Single.error<WeatherResponse>(e)
         }
             .subscribeOn(Schedulers.io())

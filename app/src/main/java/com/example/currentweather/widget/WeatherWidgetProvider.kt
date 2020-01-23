@@ -6,6 +6,7 @@ import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.Context
 import android.content.Intent
+import android.view.View
 import android.widget.RemoteViews
 import com.example.currentweather.Constants.Companion.ACTION_UPDATE_APPWIDGET
 import com.example.currentweather.Constants.Companion.BLUE_NUMBER
@@ -25,6 +26,7 @@ import org.koin.core.KoinComponent
 import org.koin.core.inject
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 class WeatherWidgetProvider : AppWidgetProvider(), KoinComponent {
 
@@ -35,7 +37,8 @@ class WeatherWidgetProvider : AppWidgetProvider(), KoinComponent {
         Logger.log("WeatherWidgetProvider", "onUpdate")
         widgetIds.forEach { widgetId ->
             Logger.log("WeatherWidgetProvider", "id: $widgetId")
-            updateWidget(context, manager, widgetId)
+            if (preferenceHelper.hasColorNumber(widgetId))
+                updateWidget(context, manager, widgetId)
         }
         super.onUpdate(context, manager, widgetIds)
     }
@@ -72,8 +75,13 @@ class WeatherWidgetProvider : AppWidgetProvider(), KoinComponent {
         context: Context, manager: AppWidgetManager, widgetId: Int, colorNumber: Int? = null
     ) {
         if (colorNumber != null) preferenceHelper.saveColorNumber(widgetId, colorNumber)
-        val oldWeather = preferenceHelper.getWeather()
-        repository.getCurrentWeather(Pair(Params.CityName, oldWeather.cityName), false)
+
+        RemoteViews(context.packageName, R.layout.weather_widget)
+            .showLoad()
+            .upWidget(manager, widgetId)
+
+        repository.getCurrentWeather(Pair(Params.CityName, preferenceHelper.getWeather().cityName))
+            .delay(100, TimeUnit.MILLISECONDS)
             .subscribe({ response ->
                 Logger.log("WeatherWidgetProvider", "updateWidget response: $response")
                 update(
@@ -82,10 +90,10 @@ class WeatherWidgetProvider : AppWidgetProvider(), KoinComponent {
                 )
             }, {
                 Logger.log("WeatherWidgetProvider", "updateWidget err", it)
-                update(
-                    context, manager, widgetId,
-                    oldWeather.cityName, oldWeather.temperature, oldWeather.date, colorNumber
-                )
+                hideProgressBar(context, manager, widgetId)
+            }, {
+                Logger.log("WeatherWidgetProvider", "updateWidget onComplete")
+                hideProgressBar(context, manager, widgetId)
             })
     }
 
@@ -101,7 +109,7 @@ class WeatherWidgetProvider : AppWidgetProvider(), KoinComponent {
         val timeText = if (date != null) {
             SimpleDateFormat(TIME_FORMAT, Locale.getDefault()).format(date * 1000)
         } else {
-            context.resources.getString(R.string.unknown_city)
+            context.resources.getString(R.string.no_data)
         }
 
         RemoteViews(context.packageName, R.layout.weather_widget)
@@ -110,6 +118,12 @@ class WeatherWidgetProvider : AppWidgetProvider(), KoinComponent {
             .upTime(timeText)
             .setOnClick(context, widgetId)
             .setColor(colorNumber ?: preferenceHelper.getColorNumber(widgetId))
+            .upWidget(manager, widgetId)
+    }
+
+    private fun hideProgressBar(context: Context, manager: AppWidgetManager, widgetId: Int) {
+        RemoteViews(context.packageName, R.layout.weather_widget)
+            .showTemp()
             .upWidget(manager, widgetId)
     }
 
@@ -150,6 +164,18 @@ class WeatherWidgetProvider : AppWidgetProvider(), KoinComponent {
                 PendingIntent.FLAG_UPDATE_CURRENT
             )
         )
+        return this
+    }
+
+    private fun RemoteViews.showTemp(): RemoteViews {
+        this.setViewVisibility(R.id.progress_bar, View.INVISIBLE)
+        this.setViewVisibility(R.id.weather_text, View.VISIBLE)
+        return this
+    }
+
+    private fun RemoteViews.showLoad(): RemoteViews {
+        this.setViewVisibility(R.id.progress_bar, View.VISIBLE)
+        this.setViewVisibility(R.id.weather_text, View.INVISIBLE)
         return this
     }
 
