@@ -47,6 +47,9 @@ class MainActivity : AppCompatActivity() {
             layoutManager = LinearLayoutManager(this@MainActivity)
             adapter = DetailsListAdapter()
         }
+        container.setOnRefreshListener {
+            mainViewModel.updateWeather(city_name.text.toString().trim())
+        }
     }
 
     private fun subscribe() {
@@ -62,11 +65,7 @@ class MainActivity : AppCompatActivity() {
         })
 
         mainViewModel.isLoadingNow.observe(this, Observer {
-            if (it) {
-                progress_bar.visibility = View.VISIBLE
-            } else {
-                progress_bar.visibility = View.INVISIBLE
-            }
+            container.isRefreshing = it
         })
         mainViewModel.errorStringRes.observe(this, Observer { stringRes ->
             error_text.setText(stringRes)

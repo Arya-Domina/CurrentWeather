@@ -81,7 +81,7 @@ class WeatherWidgetProvider : AppWidgetProvider(), KoinComponent {
             .upWidget(manager, widgetId)
 
         repository.getCurrentWeather(Pair(Params.CityName, preferenceHelper.getWeather().cityName))
-            .delay(500, TimeUnit.MILLISECONDS)
+            .delay(100, TimeUnit.MILLISECONDS)
             .subscribe({ response ->
                 Logger.log("WeatherWidgetProvider", "updateWidget response: $response")
                 update(

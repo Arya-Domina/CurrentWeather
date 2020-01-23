@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container"
@@ -8,92 +8,87 @@
     android:background="@color/background"
     tools:context=".MainActivity">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/layout"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/city_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:drawableEnd="@drawable/ic_edit"
-            android:drawableTint="@color/city_color"
-            android:text="@string/enter_city"
-            android:textColor="@color/city_color"
-            android:textSize="@dimen/city_size"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.125" />
-
-        <EditText
-            android:id="@+id/edit_city"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@color/background"
-            android:hint="@string/enter_city"
-            android:importantForAutofill="no"
-            android:inputType="text"
-            android:textColor="@color/city_color"
-            android:textSize="@dimen/city_size"
-            android:visibility="invisible"
-            app:layout_constraintBottom_toBottomOf="@+id/city_name"
-            app:layout_constraintStart_toStartOf="@+id/city_name"
-            app:layout_constraintTop_toTopOf="@+id/city_name" />
-
-        <ProgressBar
-            android:id="@+id/progress_bar"
-            android:layout_width="@dimen/loading_size"
-            android:layout_height="@dimen/loading_size"
-            android:layout_marginBottom="2dp"
-            android:theme="@style/CircularProgress.Activity"
-            app:layout_constraintBottom_toBottomOf="@+id/city_name"
-            app:layout_constraintEnd_toStartOf="@+id/city_name"
-            app:layout_constraintTop_toTopOf="@+id/city_name" />
-
-        <TextView
-            android:id="@+id/error_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/empty"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/city_name" />
-
-        <TextView
-            android:id="@+id/temperature"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/temperature_margin"
-            android:hint="@string/nan"
-            android:textSize="@dimen/temperature_size"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/city_name" />
-
-        <TextView
-            android:id="@+id/description"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin"
-            android:hint="@string/empty"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/temperature" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler_view"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/description" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</ScrollView>
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/city_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableEnd="@drawable/ic_edit"
+                android:drawableTint="@color/city_color"
+                android:text="@string/enter_city"
+                android:textColor="@color/city_color"
+                android:textSize="@dimen/city_size"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.125" />
+
+            <EditText
+                android:id="@+id/edit_city"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/background"
+                android:hint="@string/enter_city"
+                android:importantForAutofill="no"
+                android:inputType="text"
+                android:textColor="@color/city_color"
+                android:textSize="@dimen/city_size"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toBottomOf="@+id/city_name"
+                app:layout_constraintStart_toStartOf="@+id/city_name"
+                app:layout_constraintTop_toTopOf="@+id/city_name" />
+
+            <TextView
+                android:id="@+id/error_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/empty"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/city_name" />
+
+            <TextView
+                android:id="@+id/temperature"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/temperature_margin"
+                android:hint="@string/nan"
+                android:textSize="@dimen/temperature_size"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/city_name" />
+
+            <TextView
+                android:id="@+id/description"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin"
+                android:hint="@string/empty"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/temperature" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/description" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

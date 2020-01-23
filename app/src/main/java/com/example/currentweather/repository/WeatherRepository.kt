@@ -30,11 +30,7 @@ class WeatherRepository : KoinComponent {
             getLocalWeather().subscribe({ response ->
                 Logger.log("WeatherRepository", "obs getLocalWeather")
 
-                val second = if (param.second == null) {
-                    response.getSavedParameter(param.first)
-                } else {
-                    param.second!!
-                }
+                val second = param.second?.let { it } ?: response.getSavedParameter(param.first)
                 val p: Pair<Params, Any> = Pair(param.first, second)
                 Logger.log("WeatherRepository", "p: (${p.first}, ${p.second})")
                 emitter.onNext(response)
