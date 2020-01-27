@@ -6,11 +6,13 @@ import android.view.KeyEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.Observer
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.currentweather.ui.DetailsListAdapter
+import com.example.currentweather.ui.BaseFragment
+import com.example.currentweather.ui.FragmentDetails
+import com.example.currentweather.ui.FragmentForecast
 import com.example.currentweather.util.Logger
-import com.example.currentweather.util.convertKtoC
 import kotlinx.android.synthetic.main.activity_main.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -20,10 +22,15 @@ class MainActivity : AppCompatActivity() {
     private val input by lazy {
         getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
     }
+    private var fragmentType: String = FragmentDetails::class.java.simpleName
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        val fragmentTransaction = supportFragmentManager.beginTransaction()
+        fragmentTransaction.add(R.id.layout, FragmentDetails())
+        fragmentTransaction.commit()
 
         bindView()
         subscribe()
@@ -44,10 +51,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun bindView() {
-        recycler_view.apply {
-            layoutManager = LinearLayoutManager(this@MainActivity)
-            adapter = DetailsListAdapter()
-        }
         container.setOnRefreshListener {
             mainViewModel.updateWeather(city_name.text.toString().trim())
         }
@@ -56,13 +59,8 @@ class MainActivity : AppCompatActivity() {
     private fun subscribe() {
         mainViewModel.weatherData.observe(this, Observer { weather ->
             city_name.text = weather.cityName ?: resources.getString(R.string.no_data)
-            temperature.text = weather.temperature?.let {
-                resources.getString(R.string.temperature_degree, it.convertKtoC())
-            } ?: resources.getString(R.string.nan)
-            description.text =
-                weather.weatherDescription ?: resources.getString(R.string.no_data)
-
-            (recycler_view.adapter as DetailsListAdapter).updateInfo(this, weather)
+            (supportFragmentManager.findFragmentById(R.id.layout) as BaseFragment)
+                .updateView(weather)
         })
 
         mainViewModel.isLoadingNow.observe(this, Observer {
@@ -94,14 +92,21 @@ class MainActivity : AppCompatActivity() {
                 showCityLabel()
             }
         }
-        temperature.setOnClickListener { // temporary
-            mainViewModel.updateForecast(city_name.text.toString().trim())
+        switch_view.setOnClickListener {
+            when (fragmentType) {
+                FragmentDetails::class.java.simpleName -> {
+                    supportFragmentManager.replaceFragment(FragmentForecast())
+                }
+                else -> {
+                    supportFragmentManager.replaceFragment(FragmentDetails())
+                }
+            }
         }
     }
 
     private fun showCityLabel() {
         city_name.visibility = View.VISIBLE
-        edit_city.visibility = View.INVISIBLE
+        edit_city.visibility = View.GONE
         layout.setBackgroundResource(R.color.background)
         input.hideSoftInputFromWindow(container.windowToken, InputMethodManager.HIDE_NOT_ALWAYS)
 
@@ -109,13 +114,24 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showEditCity() {
-        city_name.visibility = View.INVISIBLE
+        city_name.visibility = View.GONE
         edit_city.setText(city_name.text)
         edit_city.visibility = View.VISIBLE
         edit_city.requestFocus()
         edit_city.selectAll()
         layout.setBackgroundResource(R.color.shadow_background)
         input.showSoftInput(edit_city, InputMethodManager.SHOW_IMPLICIT)
+    }
+
+    private fun FragmentManager.replaceFragment(newFragment: BaseFragment) {
+        val transaction = beginTransaction()
+        transaction.replace(R.id.layout, newFragment)
+        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+        transaction.commitNow()
+        mainViewModel.weatherData.value?.let {
+            (findFragmentById(R.id.layout) as BaseFragment).updateView(it)
+        }
+        fragmentType = newFragment::class.java.simpleName
     }
 
 }
