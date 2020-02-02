@@ -2,7 +2,7 @@ package com.example.currentweather
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.currentweather.models.Params
+import com.example.currentweather.models.Parameter
 import com.example.currentweather.models.WeatherException
 import com.example.currentweather.models.WeatherResponse
 import com.example.currentweather.repository.WeatherRepository
@@ -36,7 +36,7 @@ class MainViewModel(
 
     fun updateWeather(newCityName: String? = null) {
         isLoadingNow.value = true
-        val disposable = repository.getCurrentWeather(Pair(Params.CityName, newCityName))
+        val disposable = repository.getCurrentWeather(newCityName?.let { Parameter.City(it) })
             .subscribe({
                 Logger.log("MainViewModel", "updateWeather: $it")
                 weatherData.postValue(it)

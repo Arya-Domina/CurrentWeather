@@ -48,7 +48,7 @@ class MainActivity : AppCompatActivity() {
             adapter = DetailsListAdapter()
         }
         container.setOnRefreshListener {
-            mainViewModel.updateWeather(city_name.text.toString().trim())
+            mainViewModel.updateWeather()
         }
     }
 
