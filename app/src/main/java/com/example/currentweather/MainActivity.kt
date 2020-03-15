@@ -13,24 +13,33 @@ import com.example.currentweather.ui.BaseFragment
 import com.example.currentweather.ui.FragmentDetails
 import com.example.currentweather.ui.FragmentForecast
 import com.example.currentweather.util.Logger
+import com.example.currentweather.util.PreferenceHelper
 import kotlinx.android.synthetic.main.activity_main.*
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : AppCompatActivity() {
 
     private val mainViewModel: MainViewModel by viewModel()
+    private val preferenceHelper: PreferenceHelper by inject()
     private val input by lazy {
         getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
     }
-    private var fragmentType: String = FragmentDetails::class.java.simpleName
+    private var fragmentType: String = preferenceHelper.getFragmentType()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        Logger.log("MainActivity", "onCreate")
 
-        val fragmentTransaction = supportFragmentManager.beginTransaction()
-        fragmentTransaction.add(R.id.layout, FragmentDetails())
-        fragmentTransaction.commit()
+        when (fragmentType) {
+            FragmentForecast::class.java.simpleName -> {
+                supportFragmentManager.replaceFragment(FragmentForecast())
+            }
+            else -> {
+                supportFragmentManager.replaceFragment(FragmentDetails())
+            }
+        }
 
         bindView()
         subscribe()
@@ -38,6 +47,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
+        Logger.log("MainMainActivity", "onDestroy")
+        preferenceHelper.saveFragmentType(fragmentType)
         mainViewModel.onDestroy()
         super.onDestroy()
     }

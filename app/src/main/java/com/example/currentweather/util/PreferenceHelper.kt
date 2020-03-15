@@ -13,6 +13,7 @@ class PreferenceHelper(context: Context) {
         private const val WEATHER = "weather"
         private const val WIDGET_COLOR_NUMBER = "widget_color_"
         private const val WIDGET_LAST_TIME = "widget_time"
+        private const val FRAGMENT_TYPE = "fragment_type"
     }
 
     private val sharedPreferences: SharedPreferences =
@@ -57,6 +58,14 @@ class PreferenceHelper(context: Context) {
 
     fun saveLastTime(time: Long) {
         sharedPreferences.edit().putLong(WIDGET_LAST_TIME, time).apply()
+    }
+
+    fun getFragmentType(): String {
+        return sharedPreferences.getString(FRAGMENT_TYPE, "")
+    }
+
+    fun saveFragmentType(fragmentType: String) {
+        sharedPreferences.edit().putString(FRAGMENT_TYPE, fragmentType).apply()
     }
 
 }

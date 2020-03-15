@@ -1,4 +1,6 @@
 package com.example.currentweather.models
 
-class WeatherException(exception: Throwable, val stringRes: Int) : Throwable(exception) {
+import androidx.annotation.StringRes
+
+class WeatherException(exception: Throwable, @StringRes val stringRes: Int) : Throwable(exception) {
 }
