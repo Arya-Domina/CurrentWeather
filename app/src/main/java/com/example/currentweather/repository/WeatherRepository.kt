@@ -1,5 +1,6 @@
 package com.example.currentweather.repository
 
+import com.example.currentweather.Constants.Companion.DEFAULT_CITY
 import com.example.currentweather.Constants.Companion.INTERVAL
 import com.example.currentweather.R
 import com.example.currentweather.models.*
@@ -55,9 +56,10 @@ class WeatherRepository : KoinComponent {
         }
     }
 
-    fun getForecast(cityName: String): Single<ForecastResponse> {
-        preferenceHelper.getWeather()
-        return networkRepo.getForecast(cityName)
+    fun getForecast(cityName: String?): Single<ForecastResponse> {
+        return networkRepo.getForecast(
+            cityName ?: preferenceHelper.getWeather().cityName ?: DEFAULT_CITY
+        )
     }
 
     private fun WeatherResponse.getSavedParameter(params: Params): Any {

@@ -10,7 +10,7 @@ import com.example.currentweather.models.WeatherResponse
 import com.example.currentweather.util.convertKtoC
 import kotlinx.android.synthetic.main.fragment_details.view.*
 
-class FragmentDetails : BaseFragment() {
+class FragmentDetails : BaseFragment<WeatherResponse>() {
 
     override fun onCreateView(
         inflater: LayoutInflater,

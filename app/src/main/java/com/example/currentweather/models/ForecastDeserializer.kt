@@ -12,11 +12,11 @@ class ForecastDeserializer : JsonDeserializer<ForecastResponse>, BaseDeserialize
         context: JsonDeserializationContext?
     ): ForecastResponse {
         var forecastResponse = ForecastResponse()
-        val forecastList = arrayListOf<Forecast>()
+        val forecastList = arrayListOf<ForecastItem>()
         json?.asJsonObject?.getAsJsonArray("list")?.let { jsonArray ->
             jsonArray.forEach {
                 forecastList.add(
-                    Forecast(
+                    ForecastItem(
                         it.asJsonObject.getLong("dt"),
                         it.asJsonObject.getJsonObject("main")?.getDouble("temp"),
                         it.asJsonObject.getJsonObject("main")?.getDouble("feels_like"),
@@ -38,13 +38,13 @@ class ForecastDeserializer : JsonDeserializer<ForecastResponse>, BaseDeserialize
             forecastResponse = ForecastResponse(
                 it.getString("name"),
                 it.getString("country"),
-                it.getLong("timezone"),
                 Coordination(
                     it.getJsonObject("coord")?.getDouble("lon") ?: 0.0,
                     it.getJsonObject("coord")?.getDouble("lat") ?: 0.0
                 ),
                 it.getLong("sunrise"),
                 it.getLong("sunset"),
+                it.getLong("timezone"),
                 forecastList
             )
         }

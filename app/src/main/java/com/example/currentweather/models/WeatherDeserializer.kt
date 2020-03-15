@@ -14,10 +14,15 @@ class WeatherDeserializer : JsonDeserializer<WeatherResponse>, BaseDeserializer 
         var weatherResponse = WeatherResponse()
         json?.asJsonObject?.let {
             weatherResponse = WeatherResponse(
+                it.getString("name"),
+                it.getJsonObject("sys")?.getString("country"),
                 Coordination(
                     it.getJsonObject("coord")?.getDouble("lon") ?: 0.0,
                     it.getJsonObject("coord")?.getDouble("lat") ?: 0.0
                 ),
+                it.getJsonObject("sys")?.getLong("sunrise"),
+                it.getJsonObject("sys")?.getLong("sunset"),
+                it.getLong("timezone"),
                 it.getJsonArrayElement("weather")?.getString("main"),
                 it.getJsonArrayElement("weather")?.getString("description")?.capitalize(),
                 it.getJsonObject("main")?.getDouble("temp"),
@@ -28,12 +33,7 @@ class WeatherDeserializer : JsonDeserializer<WeatherResponse>, BaseDeserializer 
                 it.getJsonObject("wind")?.getInt("deg"),
                 it.getJsonObject("clouds")?.getInt("all"),
                 it.getLong("dt"),
-                it.getJsonObject("sys")?.getString("country"),
-                it.getJsonObject("sys")?.getLong("sunrise"),
-                it.getJsonObject("sys")?.getLong("sunset"),
-                it.getLong("timezone"),
-                it.getLong("id"),
-                it.getString("name")
+                it.getLong("id")
             )
         }
         return weatherResponse

@@ -32,14 +32,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         Logger.log("MainActivity", "onCreate")
 
-        when (fragmentType) {
-            FragmentForecast::class.java.simpleName -> {
-                supportFragmentManager.replaceFragment(FragmentForecast())
-            }
-            else -> {
-                supportFragmentManager.replaceFragment(FragmentDetails())
-            }
-        }
+        updateFragment()
 
         bindView()
         subscribe()
@@ -63,15 +56,28 @@ class MainActivity : AppCompatActivity() {
 
     private fun bindView() {
         container.setOnRefreshListener {
-            mainViewModel.updateWeather(city_name.text.toString().trim())
+            when (fragmentType) {
+                FragmentForecast::class.java.simpleName -> {
+                    mainViewModel.updateForecast(city_name.text.toString().trim())
+                }
+                else -> {
+                    mainViewModel.updateWeather(city_name.text.toString().trim())
+                }
+            }
+
+//            mainViewModel.updateWeather(city_name.text.toString().trim())
         }
     }
 
     private fun subscribe() {
         mainViewModel.weatherData.observe(this, Observer { weather ->
             city_name.text = weather.cityName ?: resources.getString(R.string.no_data)
-            (supportFragmentManager.findFragmentById(R.id.layout) as BaseFragment)
-                .updateView(weather)
+            (supportFragmentManager.findFragmentById(R.id.layout) as FragmentDetails).updateView(weather)
+        })
+        //
+        mainViewModel.weatherForecast.observe(this, Observer { weather ->
+            city_name.text = weather.cityName ?: resources.getString(R.string.no_data)
+            (supportFragmentManager.findFragmentById(R.id.layout) as FragmentForecast).updateView(weather)
         })
 
         mainViewModel.isLoadingNow.observe(this, Observer {
@@ -104,14 +110,23 @@ class MainActivity : AppCompatActivity() {
             }
         }
         switch_view.setOnClickListener {
-            when (fragmentType) {
-                FragmentDetails::class.java.simpleName -> {
-                    supportFragmentManager.replaceFragment(FragmentForecast())
-                }
-                else -> {
-                    supportFragmentManager.replaceFragment(FragmentDetails())
-                }
-            }
+            if (fragmentType == FragmentForecast::class.java.simpleName) fragmentType = FragmentDetails::class.java.simpleName
+            else if (fragmentType == FragmentDetails::class.java.simpleName) fragmentType = FragmentForecast::class.java.simpleName
+            updateFragment(city_name.text.toString().trim())
+//            when (fragmentType) {
+//                FragmentDetails::class.java.simpleName -> {
+//                    supportFragmentManager.replaceFragment(FragmentForecast())
+//                    mainViewModel.weatherForecast.value?.let {
+//                        (supportFragmentManager.findFragmentById(R.id.layout) as FragmentForecast).updateView(it)
+//                    }
+//                }
+//                else -> {
+//                    supportFragmentManager.replaceFragment(FragmentDetails())
+//                    mainViewModel.weatherData.value?.let {
+//                        (supportFragmentManager.findFragmentById(R.id.layout) as FragmentDetails).updateView(it)
+//                    }
+//                }
+//            }
         }
     }
 
@@ -134,15 +149,34 @@ class MainActivity : AppCompatActivity() {
         input.showSoftInput(edit_city, InputMethodManager.SHOW_IMPLICIT)
     }
 
-    private fun FragmentManager.replaceFragment(newFragment: BaseFragment) {
+    private fun updateFragment(cityName: String? = null) {
+        when (fragmentType) {
+            FragmentForecast::class.java.simpleName -> {
+                supportFragmentManager.replaceFragment(FragmentForecast())
+                //                mainViewModel.weatherForecast.value?.let {
+                //                    (supportFragmentManager.findFragmentById(R.id.layout) as FragmentForecast).updateView(it)
+                //                }
+                mainViewModel.updateForecast(cityName)
+            }
+            else -> {
+                supportFragmentManager.replaceFragment(FragmentDetails())
+                //                mainViewModel.weatherData.value?.let {
+                //                    (supportFragmentManager.findFragmentById(R.id.layout) as FragmentDetails).updateView(it)
+                //                }
+                mainViewModel.updateWeather(cityName)
+            }
+        }
+    }
+
+    private fun FragmentManager.replaceFragment(newFragment: BaseFragment<*>) {
         val transaction = beginTransaction()
         transaction.replace(R.id.layout, newFragment)
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
         transaction.commitNow()
-        mainViewModel.weatherData.value?.let {
-            (findFragmentById(R.id.layout) as BaseFragment).updateView(it)
-        }
-        fragmentType = newFragment::class.java.simpleName
+//        mainViewModel.weatherData.value?.let {
+//            (findFragmentById(R.id.layout) as BaseFragment<*>).updateView(it)
+//        }
+//        fragmentType = newFragment::class.java.simpleName
     }
 
 }

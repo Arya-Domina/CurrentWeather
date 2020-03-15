@@ -3,7 +3,12 @@ package com.example.currentweather.models
 import com.example.currentweather.util.convertSecondToString
 
 class WeatherResponse(
-    val coordination: Coordination? = null,
+    cityName: String? = null,
+    countryCode: String? = null,
+    coordination: Coordination? = null,
+    sunrise: Long? = null,
+    sunset: Long? = null,
+    timeZone: Long? = null,
     val weatherMain: String? = null,
     val weatherDescription: String? = null,
     val temperature: Double? = null,
@@ -14,19 +19,14 @@ class WeatherResponse(
     val windDegree: Int? = null,
     val clouds: Int? = null,
     val date: Long? = null,
-    val countryCode: String? = null,
-    val sunrise: Long? = null,
-    val sunset: Long? = null,
-    val timeZone: Long? = null,
-    val id: Long? = null,
-    val cityName: String? = null
-) {
+    val id: Long? = null
+) : BaseResponse(cityName, countryCode, coordination, sunrise, sunset, timeZone) {
 
     override fun toString(): String {
         return "WeatherResponse(" +
-                "coord=$coordination, " +
+                super.toString() +
                 "main=$weatherMain, " +
-                "description=${weatherDescription}, " +
+                "description=$weatherDescription, " +
                 "temperature=$temperature, " +
                 "pressure=$pressure, " +
                 "humidity=$humidity, " +
@@ -35,11 +35,6 @@ class WeatherResponse(
                 "degree=$windDegree, " +
                 "clouds=$clouds, " +
                 "date=${date.convertSecondToString()}, " +
-                "country=$countryCode, " +
-                "sunrise=${sunrise.convertSecondToString()}, " +
-                "sunset=${sunset.convertSecondToString()}, " +
-                "timeZone=$timeZone, " +
-                "id=$id, " +
-                "cityName=$cityName)"
+                "id=$id)"
     }
 }

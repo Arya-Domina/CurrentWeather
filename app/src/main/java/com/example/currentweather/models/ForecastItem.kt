@@ -2,7 +2,7 @@ package com.example.currentweather.models
 
 import com.example.currentweather.util.convertSecondToString
 
-class Forecast(
+class ForecastItem(
     val date: Long? = null,
     val temperature: Double? = null,
     val temperatureFeels: Double? = null,
