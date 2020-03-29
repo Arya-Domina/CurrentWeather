@@ -37,3 +37,14 @@ fun Long?.convertSecondToString(): String? {
 
 private fun Long.convertStoMS(): Long = this * 1000
 
+fun Double.convertToDataString(): String {
+    return SimpleDateFormat(Constants.DATE_TIME_FORMAT, Locale.getDefault())
+            .format(this.convertStoMS())
+}
+
+fun Double.convertToTimeString(): String {
+    return SimpleDateFormat(Constants.TIME_FORMAT, Locale.getDefault())
+            .format(this.convertStoMS())
+}
+
+private fun Double.convertStoMS(): Double = this * 1000

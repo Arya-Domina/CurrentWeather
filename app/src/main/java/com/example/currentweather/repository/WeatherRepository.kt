@@ -57,9 +57,22 @@ class WeatherRepository : KoinComponent {
     }
 
     fun getForecast(cityName: String?): Single<ForecastResponse> {
-        return networkRepo.getForecast(
-            cityName ?: preferenceHelper.getWeather().cityName ?: DEFAULT_CITY
-        )
+        Logger.log("WeatherRepository", "getForecast $cityName")
+
+        return localRepo.getForecast().flatMap {
+            if (it.forecast.isNotEmpty().also { Logger.log("WeatherRepository", "isNotEmpty $it") }
+                && (it.cityName == cityName || cityName == null).also { Logger.log("WeatherRepository", "equals names $it") }
+                && (!isTimePassed(it.forecast[0].date)).also { Logger.log("WeatherRepository", "!time $it") } ) {
+                Logger.log("WeatherRepository", "forecast local ${it.cityName}")
+                Single.just(it)
+            } else {
+                Logger.log("WeatherRepository", "forecast network $cityName")
+                networkRepo.getForecast(cityName ?: DEFAULT_CITY)
+            }
+        }
+            .doOnSuccess {
+                preferenceHelper.saveForecast(it)
+            }
     }
 
     private fun WeatherResponse.getSavedParameter(params: Params): Any {
@@ -79,7 +92,7 @@ class WeatherRepository : KoinComponent {
     }
 
     private fun isTimePassed(date: Long?): Boolean {
-        return (Date().time / 1000) - (date ?: 0) > INTERVAL
+        return ((Date().time / 1000) - (date ?: 0) > INTERVAL).also { Logger.log("WeatherRepository", "isTimePassed $it") }
     }
 
     private fun getLocalWeather(): Single<WeatherResponse> {

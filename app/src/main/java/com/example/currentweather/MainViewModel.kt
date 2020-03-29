@@ -50,7 +50,17 @@ class MainViewModel(
         compositeDisposable.addAll(disposable)
     }
 
+    fun changeCityF(newCityName: String) {
+        Logger.log("MainViewModel", "changeCityF $newCityName")
+        if ((newCityName.isNotBlank() && newCityName != weatherForecast.value?.cityName)
+            || (errorStringRes.value != R.string.empty)
+        ) {
+            updateForecast(newCityName)
+        }
+    }
+
     fun updateForecast(cityName: String? = null) {
+        isLoadingNow.value = true
         val disposable = repository.getForecast(cityName)
             .subscribe({
                 Logger.log("MainViewModel", "updateForecast: $it")

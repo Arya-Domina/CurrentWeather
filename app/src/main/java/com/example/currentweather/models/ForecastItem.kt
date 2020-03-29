@@ -1,5 +1,6 @@
 package com.example.currentweather.models
 
+import com.example.currentweather.util.convertKtoC
 import com.example.currentweather.util.convertSecondToString
 
 class ForecastItem(
@@ -17,16 +18,18 @@ class ForecastItem(
 ) {
 
     override fun toString(): String {
-        return "(date=${date.convertSecondToString()}, " +
-                "temp=$temperature, " +
-                "feels=$temperatureFeels, " +
-                "pres=$pressure, " +
-                "humi=$humidity, " +
-                "main=$weatherMain, " +
-                "descr=$weatherDescription, " +
-                "clouds=$clouds, " +
-                "speed=$windSpeed, " +
-                "deg=$windDegree, " +
-                "dt_txt=$dateTxt)"
+        return "\n(date=${date.convertSecondToString()}, " +
+                "temp=%.2f, ".format(temperature?.convertKtoC()) +
+                "date=$date, " +
+//                "feels=$temperatureFeels, " +
+//                "pres=$pressure, " +
+//                "humi=$humidity, " +
+//                "main=$weatherMain, " +
+//                "descr=$weatherDescription, " +
+//                "clouds=$clouds, " +
+//                "speed=$windSpeed, " +
+//                "deg=$windDegree, " +
+                "$dateTxt)"
+//        ")"
     }
 }

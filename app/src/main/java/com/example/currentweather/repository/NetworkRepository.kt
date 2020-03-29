@@ -47,6 +47,7 @@ class NetworkRepository : IRepository, KoinComponent {
     }
 
     fun getForecast(cityName: String): Single<ForecastResponse> { // in interface
+        Logger.log("NetworkRepository", "getForecast")
         return apiService.getWeatherForecast(cityName, Locale.getDefault().language)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
