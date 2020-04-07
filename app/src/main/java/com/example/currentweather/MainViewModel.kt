@@ -20,17 +20,14 @@ class MainViewModel(
     val errorStringRes = MutableLiveData<Int>(R.string.empty)
     private val compositeDisposable: CompositeDisposable by lazy { CompositeDisposable() }
 
-    fun onDestroy() {
+    override fun onCleared() {
         compositeDisposable.dispose()
+        super.onCleared()
     }
 
-    fun changeCity(newCityName: String) {
-        if ((newCityName.isNotBlank() && newCityName != weatherData.value?.cityName)
-            || (errorStringRes.value != R.string.empty)
-        ) {
-            updateWeather(newCityName)
-        }
-    }
+    fun isCityChanged(newCityName: String): Boolean = (
+            (newCityName.isNotBlank() && newCityName != weatherData.value?.cityName)
+                    || (errorStringRes.value != R.string.empty))
 
     fun updateWeather(newCityName: String? = null) {
         isLoadingNow.value = true
@@ -50,18 +47,9 @@ class MainViewModel(
         compositeDisposable.addAll(disposable)
     }
 
-    fun changeCityF(newCityName: String) {
-        Logger.log("MainViewModel", "changeCityF $newCityName")
-        if ((newCityName.isNotBlank() && newCityName != weatherForecast.value?.cityName)
-            || (errorStringRes.value != R.string.empty)
-        ) {
-            updateForecast(newCityName)
-        }
-    }
-
-    fun updateForecast(cityName: String? = null) {
+    fun updateForecast(newCityName: String? = null) {
         isLoadingNow.value = true
-        val disposable = repository.getForecast(cityName)
+        val disposable = repository.getForecast(newCityName)
             .subscribe({
                 Logger.log("MainViewModel", "updateForecast: $it")
                 weatherForecast.postValue(it)

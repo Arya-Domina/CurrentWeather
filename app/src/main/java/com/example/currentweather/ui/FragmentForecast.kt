@@ -4,7 +4,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import android.widget.Toast
+import androidx.lifecycle.Observer
+import com.example.currentweather.MainViewModel
 import com.example.currentweather.R
 import com.example.currentweather.models.ForecastResponse
 import com.example.currentweather.util.*
@@ -12,9 +15,12 @@ import com.jjoe64.graphview.DefaultLabelFormatter
 import com.jjoe64.graphview.series.DataPoint
 import com.jjoe64.graphview.series.LineGraphSeries
 import kotlinx.android.synthetic.main.fragment_forecast.*
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import java.util.*
 
 class FragmentForecast : BaseFragment<ForecastResponse>() {
+
+    private val mainViewModel: MainViewModel by sharedViewModel()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -22,6 +28,24 @@ class FragmentForecast : BaseFragment<ForecastResponse>() {
         savedInstanceState: Bundle?
     ): View? {
         return inflater.inflate(R.layout.fragment_forecast, container, false)
+    }
+
+    override fun requestUpdate(cityName: String?) {
+        mainViewModel.updateForecast(cityName)
+    }
+
+    override fun changeCity(newCityName: String) {
+        if (mainViewModel.isCityChanged(newCityName))
+            mainViewModel.updateForecast(newCityName)
+    }
+
+    override fun observe(cityName: String?, textView: TextView) {
+        mainViewModel.weatherForecast.observe(this, Observer { forecastResponse ->
+            Logger.log("FragmentForecast", "observeForecast")
+            textView.text = forecastResponse.cityName ?: resources.getString(R.string.no_data)
+            updateView(forecastResponse)
+        })
+        mainViewModel.updateForecast(cityName)
     }
 
     override fun updateView(weather: ForecastResponse) {
