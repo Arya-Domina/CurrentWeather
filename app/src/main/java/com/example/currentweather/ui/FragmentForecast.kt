@@ -45,7 +45,6 @@ class FragmentForecast : BaseFragment<ForecastResponse>() {
             textView.text = forecastResponse.cityName ?: resources.getString(R.string.no_data)
             updateView(forecastResponse)
         })
-        mainViewModel.updateForecast(cityName)
     }
 
     override fun updateView(weather: ForecastResponse) {

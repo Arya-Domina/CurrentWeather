@@ -60,6 +60,7 @@ class WeatherRepository : KoinComponent {
         Logger.log("WeatherRepository", "getForecast $cityName")
 
         return localRepo.getForecast().flatMap {
+            val city = cityName ?: it.cityName ?: DEFAULT_CITY
             if (it.forecast.isNotEmpty().also { Logger.log("WeatherRepository", "isNotEmpty $it") }
                 && (it.cityName == cityName || cityName == null).also { Logger.log("WeatherRepository", "equals names $it") }
                 && (!isTimePassed(it.forecast[0].date)).also { Logger.log("WeatherRepository", "!time $it") } ) {
@@ -67,7 +68,7 @@ class WeatherRepository : KoinComponent {
                 Single.just(it)
             } else {
                 Logger.log("WeatherRepository", "forecast network $cityName")
-                networkRepo.getForecast(cityName ?: DEFAULT_CITY)
+                networkRepo.getForecast(city)
             }
         }
             .doOnSuccess {

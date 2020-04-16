@@ -78,8 +78,8 @@ class PreferenceHelper(context: Context) {
         sharedPreferences.edit().putLong(WIDGET_LAST_TIME, time).apply()
     }
 
-    fun getFragmentType(): String {
-        return sharedPreferences.getString(FRAGMENT_TYPE, "")
+    fun getFragmentType(): String? {
+        return sharedPreferences.getString(FRAGMENT_TYPE, null)
             .also { Logger.log("PreferenceHelper", "getFragmentType: $it") }
     }
 

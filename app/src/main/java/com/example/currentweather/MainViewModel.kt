@@ -34,15 +34,15 @@ class MainViewModel(
         val disposable = repository.getCurrentWeather(Pair(Params.CityName, newCityName))
             .subscribe({
                 Logger.log("MainViewModel", "updateWeather: $it")
-                weatherData.postValue(it)
+                weatherData.value = it
             }, {
                 Logger.log("MainViewModel", "updateWeather: err", it)
-                isLoadingNow.postValue(false)
-                errorStringRes.postValue((it as WeatherException).stringRes)
+                isLoadingNow.value = false
+                errorStringRes.value = (it as WeatherException).stringRes
             }, {
                 Logger.log("MainViewModel", "updateWeather: onComplete")
-                isLoadingNow.postValue(false)
-                errorStringRes.postValue(R.string.empty)
+                isLoadingNow.value = false
+                errorStringRes.value = R.string.empty
             })
         compositeDisposable.addAll(disposable)
     }
@@ -52,11 +52,11 @@ class MainViewModel(
         val disposable = repository.getForecast(newCityName)
             .subscribe({
                 Logger.log("MainViewModel", "updateForecast: $it")
-                weatherForecast.postValue(it)
-                isLoadingNow.postValue(false)
+                weatherForecast.value = it
+                isLoadingNow.value = false
             }, {
                 Logger.log("MainViewModel", "updateForecast: err", it)
-                isLoadingNow.postValue(false)
+                isLoadingNow.value = false
             })
         compositeDisposable.addAll(disposable)
     }

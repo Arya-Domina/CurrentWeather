@@ -26,7 +26,10 @@ class MainActivity : AppCompatActivity() {
     private val input by lazy {
         getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
     }
-    private var fragmentType: String = preferenceHelper.getFragmentType()
+    private var fragmentType: String = preferenceHelper.getFragmentType() ?: FragmentDetails::class.java.simpleName
+    companion object {
+        private const val EDIT_TEXT = "edit_text"
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,6 +39,13 @@ class MainActivity : AppCompatActivity() {
         subscribe()
         setListeners()
         updateFragment()
+        if (savedInstanceState == null) getFragment().requestUpdate(null)
+        else if (savedInstanceState.getBoolean(EDIT_TEXT)) showEditCity()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putBoolean(EDIT_TEXT, edit_city.visibility == View.VISIBLE)
+        super.onSaveInstanceState(outState)
     }
 
     override fun onBackPressed() {
@@ -79,7 +89,10 @@ class MainActivity : AppCompatActivity() {
             else if (fragmentType == FragmentDetails::class.java.simpleName)
                 fragmentType = FragmentForecast::class.java.simpleName
             Logger.log("MainActivity", "setListeners switch to $fragmentType")
-            updateFragment(city_name.text.toString().trim())
+            city_name.text.toString().trim().also {
+                updateFragment(it)
+                getFragment().requestUpdate(it)
+            }
             preferenceHelper.saveFragmentType(fragmentType)
         }
         container.setOnRefreshListener {
@@ -105,6 +118,7 @@ class MainActivity : AppCompatActivity() {
         edit_city.selectAll()
         layout.setBackgroundResource(R.color.shadow_background)
         input.showSoftInput(edit_city, InputMethodManager.SHOW_IMPLICIT)
+        Logger.log("MainActivity", "showEditCity type: $fragmentType, ${edit_city.text}")
     }
 
     private fun updateFragment(cityName: String? = null) { // set new Fragment
@@ -115,7 +129,6 @@ class MainActivity : AppCompatActivity() {
         supportFragmentManager.replaceFragment(newFragment)
 
         getFragment().observe(cityName, city_name)
-        getFragment().requestUpdate(cityName)
     }
 
     private fun getFragment() =
