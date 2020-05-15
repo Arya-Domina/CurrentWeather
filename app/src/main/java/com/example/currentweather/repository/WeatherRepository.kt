@@ -67,7 +67,7 @@ class WeatherRepository : KoinComponent {
                 Logger.log("WeatherRepository", "forecast local ${it.cityName}")
                 Single.just(it)
             } else {
-                Logger.log("WeatherRepository", "forecast network $cityName")
+                Logger.log("WeatherRepository", "forecast network $city")
                 networkRepo.getForecast(city)
             }
         }

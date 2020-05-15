@@ -28,6 +28,17 @@ fun Int?.convertDegreeToDirection(): Int {
     }
 }
 
+fun Long?.isMidnight(): Boolean {
+    return this.convertSecondToString()?.endsWith("00:00") ?: false
+}
+
+fun Long?.convertSecondToStringDay(): String {
+    return this?.let {
+        SimpleDateFormat(Constants.DAY_FORMAT, Locale.getDefault())
+            .format(this.convertStoMS())
+    } ?: ""
+}
+
 fun Long?.convertSecondToString(): String? {
     return this?.let {
         SimpleDateFormat(Constants.DATE_TIME_FORMAT, Locale.getDefault())
