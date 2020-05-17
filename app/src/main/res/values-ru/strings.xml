@@ -24,6 +24,7 @@
     <string name="time_name">Время</string>
     <string name="sun_name">Солнце</string>
     <string name="sun_format">с %1$s до %2$s</string>
+    <string name="hour">%sч</string>
 
     <string name="red">Красный</string>
     <string name="blue">Синий</string>

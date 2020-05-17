@@ -54,7 +54,7 @@ fun Double.convertToDataString(): String {
 }
 
 fun Double.convertToTimeString(): String {
-    return SimpleDateFormat(Constants.TIME_FORMAT, Locale.getDefault())
+    return SimpleDateFormat(Constants.HOUR_FORMAT, Locale.getDefault())
             .format(this.convertStoMS())
 }
 

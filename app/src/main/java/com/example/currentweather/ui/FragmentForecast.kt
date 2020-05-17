@@ -60,8 +60,8 @@ class FragmentForecast : BaseFragment<ForecastResponse>() {
             "updateView, city: ${weather.cityName}, date: ${weather.forecast[0].date.convertSecondToString()}"
         )
 
-        val maxY = weather.forecast.maxTemp().convertKtoC().also { ceil(it / 5) * 5 }
-        val minY = weather.forecast.minTemp().convertKtoC().also { floor(it / 5) * 5 }
+        val maxY = weather.forecast.maxTempRounded()
+        val minY = weather.forecast.minTempRounded()
         Logger.log("FragmentForecast", "updateView, rounded maxY: $maxY, minY: $minY")
 
         val array = arrayListOf<DataPoint>()
@@ -116,7 +116,7 @@ class FragmentForecast : BaseFragment<ForecastResponse>() {
         gridLabelRenderer.labelFormatter = object : DefaultLabelFormatter() {
             override fun formatLabel(value: Double, isValueX: Boolean): String {
                 return if (isValueX) {
-                    value.convertToTimeString()
+                    context.resources.getString(R.string.hour, value.convertToTimeString())
                 } else {
                     super.formatLabel(value, isValueX)
                 }
@@ -146,25 +146,25 @@ class FragmentForecast : BaseFragment<ForecastResponse>() {
         layoutParams = par
     }
 
-    private fun List<ForecastItem>.maxTemp(): Double {
+    private fun List<ForecastItem>.maxTempRounded(): Double {
         return find { it.temperature != null }?.temperature?.let { first ->
             var temp = first
             forEach { item ->
                 if (item.temperature != null && item.temperature > temp)
                     temp = item.temperature
             }
-            return temp
+            ceil(temp.convertKtoC() / 5) * 5
         } ?: 0.0
     }
 
-    private fun List<ForecastItem>.minTemp(): Double {
+    private fun List<ForecastItem>.minTempRounded(): Double {
         return find { it.temperature != null }?.temperature?.let { first ->
             var temp = first
             forEach { item ->
                 if (item.temperature != null && item.temperature < temp)
                     temp = item.temperature
             }
-            return temp
+            floor(temp.convertKtoC() / 5) * 5
         } ?: 0.0
     }
 

@@ -2,16 +2,16 @@ package com.example.currentweather.repository
 
 import com.example.currentweather.Constants.Companion.DEFAULT_CITY
 import com.example.currentweather.Constants.Companion.INTERVAL
-import com.example.currentweather.R
-import com.example.currentweather.models.*
+import com.example.currentweather.models.Coordination
+import com.example.currentweather.models.ForecastResponse
+import com.example.currentweather.models.Params
+import com.example.currentweather.models.WeatherResponse
 import com.example.currentweather.util.Logger
 import com.example.currentweather.util.PreferenceHelper
 import io.reactivex.Observable
 import io.reactivex.Single
 import org.koin.core.KoinComponent
 import org.koin.core.inject
-import retrofit2.HttpException
-import java.io.IOException
 import java.util.*
 
 class WeatherRepository : KoinComponent {
@@ -40,14 +40,7 @@ class WeatherRepository : KoinComponent {
                         emitter.onNext(secondResponse)
                         emitter.onComplete()
                     }, { throwable ->
-                        val th =
-                            when (throwable) {
-                                is IOException -> WeatherException(throwable, R.string.err_no_connection)
-                                // UnknownHostException || SocketTimeoutException // timeout || NoRouteToHostException // No route to host
-                                is HttpException -> WeatherException(throwable, R.string.err_wrong_city_name) // && param.first == Params.CityName
-                                else -> WeatherException(throwable, R.string.err_unknown)
-                            }
-                        emitter.onError(th)
+                        emitter.onError(throwable)
                     })
                 } else {
                     emitter.onComplete()

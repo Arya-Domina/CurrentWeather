@@ -4,7 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.currentweather.models.ForecastResponse
 import com.example.currentweather.models.Params
-import com.example.currentweather.models.WeatherException
+import com.example.currentweather.models.ResponseThrowable
 import com.example.currentweather.models.WeatherResponse
 import com.example.currentweather.repository.WeatherRepository
 import com.example.currentweather.util.Logger
@@ -36,9 +36,9 @@ class MainViewModel(
                 Logger.log("MainViewModel", "updateWeather: $it")
                 weatherData.value = it
             }, {
-                Logger.log("MainViewModel", "updateWeather: err", it)
                 isLoadingNow.value = false
-                errorStringRes.value = (it as WeatherException).stringRes
+                if (it is ResponseThrowable) errorStringRes.value = it.stringRes
+                else Logger.log("MainViewModel", "updateWeather: err", it)
             }, {
                 Logger.log("MainViewModel", "updateWeather: onComplete")
                 isLoadingNow.value = false
@@ -54,9 +54,11 @@ class MainViewModel(
                 Logger.log("MainViewModel", "updateForecast: $it")
                 weatherForecast.value = it
                 isLoadingNow.value = false
+                errorStringRes.value = R.string.empty
             }, {
-                Logger.log("MainViewModel", "updateForecast: err", it)
                 isLoadingNow.value = false
+                if (it is ResponseThrowable) errorStringRes.value = it.stringRes
+                else Logger.log("MainViewModel", "updateForecast: err", it)
             })
         compositeDisposable.addAll(disposable)
     }

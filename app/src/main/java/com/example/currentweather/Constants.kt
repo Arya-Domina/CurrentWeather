@@ -8,6 +8,7 @@ class Constants {
         const val DATE_TIME_FORMAT = "yyyy.MM.dd HH:mm"
         const val DAY_FORMAT = "dd MMMM, E"
         const val TIME_FORMAT = "H:mm"
+        const val HOUR_FORMAT = "H"
         const val DEFAULT_CITY = "London"
 
         // Weather Widget
