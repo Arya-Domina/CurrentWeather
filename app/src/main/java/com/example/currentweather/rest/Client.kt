@@ -1,6 +1,8 @@
 package com.example.currentweather.rest
 
 import com.example.currentweather.Constants.Companion.BASE_URL
+import com.example.currentweather.models.ForecastDeserializer
+import com.example.currentweather.models.ForecastResponse
 import com.example.currentweather.models.WeatherDeserializer
 import com.example.currentweather.models.WeatherResponse
 import com.example.currentweather.util.Logger
@@ -23,6 +25,8 @@ class Client {
                 GsonConverterFactory.create(
                     GsonBuilder().registerTypeAdapter(
                         WeatherResponse::class.java, WeatherDeserializer()
+                    ).registerTypeAdapter(
+                        ForecastResponse::class.java, ForecastDeserializer()
                     ).create()
                 )
             )

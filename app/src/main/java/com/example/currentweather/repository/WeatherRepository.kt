@@ -1,10 +1,10 @@
 package com.example.currentweather.repository
 
+import com.example.currentweather.Constants.Companion.DEFAULT_CITY
 import com.example.currentweather.Constants.Companion.INTERVAL
-import com.example.currentweather.R
 import com.example.currentweather.models.Coordination
+import com.example.currentweather.models.ForecastResponse
 import com.example.currentweather.models.Params
-import com.example.currentweather.models.WeatherException
 import com.example.currentweather.models.WeatherResponse
 import com.example.currentweather.util.Logger
 import com.example.currentweather.util.PreferenceHelper
@@ -12,8 +12,6 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import org.koin.core.KoinComponent
 import org.koin.core.inject
-import retrofit2.HttpException
-import java.io.IOException
 import java.util.*
 
 class WeatherRepository : KoinComponent {
@@ -42,20 +40,33 @@ class WeatherRepository : KoinComponent {
                         emitter.onNext(secondResponse)
                         emitter.onComplete()
                     }, { throwable ->
-                        val th =
-                            when (throwable) {
-                                is IOException -> WeatherException(throwable, R.string.err_no_connection)
-                                // UnknownHostException || SocketTimeoutException // timeout || NoRouteToHostException // No route to host
-                                is HttpException -> WeatherException(throwable, R.string.err_wrong_city_name) // && param.first == Params.CityName
-                                else -> WeatherException(throwable, R.string.err_unknown)
-                            }
-                        emitter.onError(th)
+                        emitter.onError(throwable)
                     })
                 } else {
                     emitter.onComplete()
                 }
             }, {})
         }
+    }
+
+    fun getForecast(cityName: String?): Single<ForecastResponse> {
+        Logger.log("WeatherRepository", "getForecast $cityName")
+
+        return localRepo.getForecast().flatMap {
+            val city = cityName ?: it.cityName ?: DEFAULT_CITY
+            if (it.forecast.isNotEmpty().also { Logger.log("WeatherRepository", "isNotEmpty $it") }
+                && (it.cityName == cityName || cityName == null).also { Logger.log("WeatherRepository", "equals names $it") }
+                && (!isTimePassed(it.forecast[0].date)).also { Logger.log("WeatherRepository", "!time $it") } ) {
+                Logger.log("WeatherRepository", "forecast local ${it.cityName}")
+                Single.just(it)
+            } else {
+                Logger.log("WeatherRepository", "forecast network $city")
+                networkRepo.getForecast(city)
+            }
+        }
+            .doOnSuccess {
+                preferenceHelper.saveForecast(it)
+            }
     }
 
     private fun WeatherResponse.getSavedParameter(params: Params): Any {
@@ -75,7 +86,7 @@ class WeatherRepository : KoinComponent {
     }
 
     private fun isTimePassed(date: Long?): Boolean {
-        return (Date().time / 1000) - (date ?: 0) > INTERVAL
+        return ((Date().time / 1000) - (date ?: 0) > INTERVAL).also { Logger.log("WeatherRepository", "isTimePassed $it") }
     }
 
     private fun getLocalWeather(): Single<WeatherResponse> {
