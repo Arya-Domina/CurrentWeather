@@ -64,6 +64,7 @@ class WeatherWidgetProvider : AppWidgetProvider(), KoinComponent {
                 Logger.log("WeatherWidgetProvider", "onReceive, less")
 
                 val intentMain = Intent(context, MainActivity::class.java)
+                intentMain.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 context.startActivity(intentMain)
             }
         }

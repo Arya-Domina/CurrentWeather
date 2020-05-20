@@ -35,7 +35,10 @@
     <string name="sun_name">Sun</string>
     <string name="sun_format">from %1$s to %2$s</string>
 
-    <!--Widget-->
+    <!-- Forecast -->
+    <string name="hour">%sh</string>
+
+    <!-- Widget -->
     <string name="red">Red</string>
     <string name="green">Green</string>
     <string name="blue">Blue</string>
@@ -44,7 +47,7 @@
     <string name="choose_widget_color">Choose widget color</string>
     <string name="temperature_widget" translatable="false">%.0f°</string>
 
-    <!--Mock strings-->
+    <!-- Mock strings -->
     <string name="hint_city_name" translatable="false">Omsk</string>
     <string name="hint_weather" translatable="false">14°</string>
     <string name="hint_description" translatable="false">Rain</string>

@@ -1,34 +1,32 @@
 package com.example.currentweather.models
 
-import com.example.currentweather.Constants.Companion.DATE_TIME_FORMAT
-import java.text.SimpleDateFormat
-import java.util.*
+import com.example.currentweather.util.convertSecondToString
 
 class WeatherResponse(
-    var coordination: Coordination? = null,
-    var weatherMain: String? = null,
-    var weatherDescription: String? = null,
-    var temperature: Double? = null,
-    var pressure: Int? = null,
-    var humidity: Int? = null,
-    var visibility: Int? = null,
-    var windSpeed: Double? = null,
-    var windDegree: Int? = null,
-    var clouds: Int? = null,
-    var date: Long? = null,
-    var countryCode: String? = null,
-    var sunrise: Long? = null,
-    var sunset: Long? = null,
-    var timeZone: Long? = null,
-    var id: Long? = null,
-    var cityName: String? = null
-) {
+    cityName: String? = null,
+    countryCode: String? = null,
+    coordination: Coordination? = null,
+    sunrise: Long? = null,
+    sunset: Long? = null,
+    timeZone: Long? = null,
+    val weatherMain: String? = null,
+    val weatherDescription: String? = null,
+    val temperature: Double? = null,
+    val pressure: Int? = null,
+    val humidity: Int? = null,
+    val visibility: Int? = null,
+    val windSpeed: Double? = null,
+    val windDegree: Int? = null,
+    val clouds: Int? = null,
+    val date: Long? = null,
+    val id: Long? = null
+) : BaseResponse(cityName, countryCode, coordination, sunrise, sunset, timeZone) {
 
     override fun toString(): String {
         return "WeatherResponse(" +
-                "coord=$coordination, " +
+                super.toString() +
                 "main=$weatherMain, " +
-                "description=${weatherDescription}, " +
+                "description=$weatherDescription, " +
                 "temperature=$temperature, " +
                 "pressure=$pressure, " +
                 "humidity=$humidity, " +
@@ -36,22 +34,7 @@ class WeatherResponse(
                 "speed=$windSpeed, " +
                 "degree=$windDegree, " +
                 "clouds=$clouds, " +
-                "date=${date.convertToString()}, " +
-                "country=$countryCode, " +
-                "sunrise=${sunrise.convertToString()}, " +
-                "sunset=${sunset.convertToString()}, " +
-                "timeZone=$timeZone, " +
-                "id=$id, " +
-                "cityName=$cityName)"
+                "date=${date.convertSecondToString()}, " +
+                "id=$id)"
     }
-
-    private fun Long?.convertToString(): String? {
-        return this?.let {
-            SimpleDateFormat(DATE_TIME_FORMAT, Locale.getDefault())
-                .format(this.convertStoMS())
-        }
-    }
-
-    private fun Long.convertStoMS(): Long = this * 1000
-
 }
