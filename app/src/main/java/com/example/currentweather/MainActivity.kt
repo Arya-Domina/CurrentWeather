@@ -123,9 +123,13 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateFragment(cityName: String? = null) { // set new Fragment
         Logger.log("MainActivity", "updateFragment $fragmentType")
-        val newFragment = if (fragmentType == FragmentForecast::class.java.simpleName)
+        val newFragment = if (fragmentType == FragmentForecast::class.java.simpleName) {
+            switch_view.setImageDrawable(resources.getDrawable(R.drawable.ic_switch_details, theme))
             FragmentForecast()
-        else FragmentDetails()
+        } else {
+            switch_view.setImageDrawable(resources.getDrawable(R.drawable.ic_switch_forecast, theme))
+            FragmentDetails()
+        }
         supportFragmentManager.replaceFragment(newFragment)
 
         getFragment().observe(cityName, city_name)
