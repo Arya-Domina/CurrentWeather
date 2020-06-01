@@ -17,14 +17,14 @@ class NetworkRepository : IRepository, KoinComponent {
 
     private val apiService: ApiService by inject()
 
-    override fun getWeather(param: Pair<Params, Any>?): Single<WeatherResponse> {
+    override fun getWeather(param: Parameter?): Single<WeatherResponse> {
         val language = Locale.getDefault().language
         return try {
-            when (param?.first) {
-                Params.CityName -> getCurrentWeather(param.second as String, language)
-                Params.CityId -> getCurrentWeather(param.second as Long, language)
-                Params.CityCoord -> getCurrentWeather(param.second as Coordination, language)
-                else -> Single.error<WeatherResponse>(Throwable("No parameters exception"))
+            when (param) {
+                is Parameter.City -> getCurrentWeather(param.cityName, language)
+                is Parameter.Id -> getCurrentWeather(param.id, language)
+                is Parameter.Coord -> getCurrentWeather(param.coordination, language)
+                null -> Single.error<WeatherResponse>(Throwable("No parameters exception")) // TODO WeatherException
             }
         } catch (e: Exception) {
             Logger.log("NetworkRepository", "getWeather: err", e)
