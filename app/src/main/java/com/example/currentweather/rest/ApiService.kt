@@ -12,21 +12,21 @@ interface ApiService {
     @GET("data/2.5/weather")
     fun getCurrentWeather(
         @Query("q") cityName: String,
-        @Query("lang") lang: String = "ru",
+        @Query("lang") lang: String,
         @Query("appid") appid: String = Constants.APP_ID_KEY
     ): Single<WeatherResponse>
 
     @GET("data/2.5/forecast")
     fun getWeatherForecast(
         @Query("q") cityName: String,
-        @Query("lang") lang: String = "ru",
+        @Query("lang") lang: String,
         @Query("appid") appid: String = Constants.APP_ID_KEY
     ): Single<ForecastResponse>
 
     @GET("data/2.5/weather")
     fun getCurrentWeather(
         @Query("id") id: Long,
-        @Query("lang") lang: String = "ru",
+        @Query("lang") lang: String,
         @Query("appid") appid: String = Constants.APP_ID_KEY
     ): Single<WeatherResponse>
 
@@ -34,7 +34,7 @@ interface ApiService {
     fun getCurrentWeather(
         @Query("lat") lat: Double,
         @Query("lon") lon: Double,
-        @Query("lang") lang: String = "ru",
+        @Query("lang") lang: String,
         @Query("appid") appid: String = Constants.APP_ID_KEY
     ): Single<WeatherResponse>
 
