@@ -26,6 +26,7 @@ import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import java.util.*
 import kotlin.math.ceil
 import kotlin.math.floor
+import kotlin.math.max
 
 class FragmentForecast : BaseFragment<ForecastResponse>() {
 
@@ -74,7 +75,6 @@ class FragmentForecast : BaseFragment<ForecastResponse>() {
 
         val maxY = weather.forecast.maxTempRounded()
         val minY = weather.forecast.minTempRounded()
-        // TODO minBy and maxBy temperatureFeels
         Logger.log("FragmentForecast", "updateView, rounded maxY: $maxY, minY: $minY")
 
         val arrayTemp = arrayListOf<DataPoint>()
@@ -83,48 +83,11 @@ class FragmentForecast : BaseFragment<ForecastResponse>() {
         val arraySnow = arrayListOf<DataPoint>()
         var title = weather.forecast[0].date.convertSecondToStringDay()
         weather.forecast.forEachIndexed { index, forecastItem ->
-            arrayTemp.add(
-                DataPoint(
-                    Date(forecastItem.date ?: 0),
-                    forecastItem.temperature?.convertKtoC() ?: 0.0
-                )
-            )
-            arrayFeels.add(
-                DataPoint(
-                    Date(forecastItem.date ?: 0),
-                    forecastItem.temperatureFeels?.convertKtoC() ?: 0.0
-                )
-            )
-            forecastItem.rain?.let {
-                arrayRain.add(
-                    DataPoint(
-                        Date(forecastItem.date ?: 0),
-                        it
-                    )
-                )
-            } ?: if (index != 0 && weather.forecast[index - 1].rain != null || index != weather.forecast.size - 1 && weather.forecast[index + 1].rain != null) {
-                arrayRain.add(
-                    DataPoint(
-                        Date(forecastItem.date ?: 0),
-                        0.0
-                    )
-                )
-            }
-            forecastItem.snow?.let {
-                arraySnow.add(
-                    DataPoint(
-                        Date(forecastItem.date ?: 0),
-                        it
-                    )
-                )
-            } ?: if (index != 0 && weather.forecast[index - 1].snow != null || index != weather.forecast.size - 1 && weather.forecast[index + 1].snow != null) {
-                arraySnow.add(
-                    DataPoint(
-                        Date(forecastItem.date ?: 0),
-                        0.0
-                    )
-                )
-            }
+            forecastItem.addToArray(arrayTemp, forecastItem.temperature)
+            forecastItem.addToArray(arrayFeels, forecastItem.temperatureFeels)
+            weather.forecast.addToArrayNotNull(arrayRain, index) { it.rain }
+            weather.forecast.addToArrayNotNull(arraySnow, index) { it.snow }
+
             if (forecastItem.date.isMidnight()) {
                 if (arrayTemp.size > 2 && weather.forecast.size - index > 3) {
                     addGraph(title, arrayTemp, arrayFeels, arrayRain, arraySnow, maxY, minY)
@@ -137,9 +100,33 @@ class FragmentForecast : BaseFragment<ForecastResponse>() {
                     title = forecastItem.date.convertSecondToStringDay()
             }
         }
-        Logger.log("FragmentForecast", "updateView array")
 
         addGraph(title, arrayTemp, arrayFeels, arrayRain, arraySnow, maxY, minY)
+    }
+
+    private fun ForecastItem.addToArray(array: ArrayList<DataPoint>, value: Double?) {
+        array.add(
+            DataPoint(
+                Date(date ?: 0),
+                value?.convertKtoC() ?: 0.0
+            )
+        )
+    }
+
+    private inline fun List<ForecastItem>.addToArrayNotNull(
+        array: ArrayList<DataPoint>, index: Int,
+        selector: (ForecastItem) -> Double?
+    ) {
+        val value = selector(get(index))?.let { it }
+            ?: if (index != 0 && selector(get(index - 1)) != null ||
+                index != size - 1 && selector(get(index + 1)) != null
+            ) 0.0 else null
+        if (value != null) array.add(
+            DataPoint(
+                Date(get(index).date ?: 0),
+                value
+            )
+        )
     }
 
     private fun addGraph(
@@ -226,10 +213,13 @@ class FragmentForecast : BaseFragment<ForecastResponse>() {
         viewport.setMinY(minY)
     }
 
-    private fun GraphView.setSecondViewportBounds(arrayRain: ArrayList<DataPoint>, arraySnow: ArrayList<DataPoint>) {
+    private fun GraphView.setSecondViewportBounds(
+        arrayRain: ArrayList<DataPoint>, arraySnow: ArrayList<DataPoint>
+    ) {
+        val maxRain = arrayRain.maxBy { it.y }?.y ?: 0.0
+        val maxSnow = arraySnow.maxBy { it.y }?.y ?: 0.0
         secondScale.setMinY(0.0)
-        secondScale.setMaxY(arrayRain.maxBy { it.y }?.y?.let { if (it < 5) 5.0 else ceil(it / 2) * 2 } ?: 5.0)
-        // TODO arraySnow.maxBy
+        secondScale.setMaxY(max(maxRain, maxSnow).let { if (it < 5) 5.0 else ceil(it / 2) * 2 })
     }
 
     private fun GraphView.setMargin() {
@@ -249,6 +239,8 @@ class FragmentForecast : BaseFragment<ForecastResponse>() {
             forEach { item ->
                 if (item.temperature != null && item.temperature > temp)
                     temp = item.temperature
+                if (item.temperatureFeels != null && item.temperatureFeels > temp)
+                    temp = item.temperatureFeels
             }
             ceil(temp.convertKtoC() / 5) * 5
         } ?: 0.0
@@ -260,6 +252,8 @@ class FragmentForecast : BaseFragment<ForecastResponse>() {
             forEach { item ->
                 if (item.temperature != null && item.temperature < temp)
                     temp = item.temperature
+                if (item.temperatureFeels != null && item.temperatureFeels < temp)
+                    temp = item.temperatureFeels
             }
             floor(temp.convertKtoC() / 5) * 5
         } ?: 0.0
