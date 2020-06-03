@@ -14,7 +14,7 @@
 
     <!-- Details -->
     <string name="wind_name">Wind</string>
-    <string name="wind_format">%1$.0f m/s, %2$s</string>
+    <string name="wind_format">%1$.1f m/s, %2$s</string>
     <string name="wind_direction_n">North</string>
     <string name="wind_direction_ne">Northeast</string>
     <string name="wind_direction_nw">Northwest</string>
@@ -37,6 +37,11 @@
 
     <!-- Forecast -->
     <string name="hour">%sh</string>
+    <string name="millimeters">%.0f mm</string>
+    <string name="legend_temp">Temperature, °C</string>
+    <string name="legend_feels">Feels Like, °C</string>
+    <string name="legend_rain">Rain, mm</string>
+    <string name="legend_snow">Snow, mm</string>
 
     <!-- Widget -->
     <string name="red">Red</string>
