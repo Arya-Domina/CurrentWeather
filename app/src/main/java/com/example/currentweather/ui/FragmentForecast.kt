@@ -77,6 +77,9 @@ class FragmentForecast : BaseFragment<ForecastResponse>() {
         val minY = weather.forecast.minTempRounded()
         Logger.log("FragmentForecast", "updateView, rounded maxY: $maxY, minY: $minY")
 
+        val hasRain = weather.forecast.find { it.rain != null } != null
+        val hasSnow = weather.forecast.find { it.snow != null } != null
+
         val arrayTemp = arrayListOf<DataPoint>()
         val arrayFeels = arrayListOf<DataPoint>()
         val arrayRain = arrayListOf<DataPoint>()
@@ -90,7 +93,10 @@ class FragmentForecast : BaseFragment<ForecastResponse>() {
 
             if (forecastItem.date.isMidnight()) {
                 if (arrayTemp.size > 2 && weather.forecast.size - index > 3) {
-                    addGraph(title, arrayTemp, arrayFeels, arrayRain, arraySnow, maxY, minY)
+                    addGraph(
+                        title, arrayTemp, arrayFeels, arrayRain, arraySnow,
+                        maxY, minY, hasRain, hasSnow
+                    )
                     arrayTemp.clear()
                     arrayFeels.clear()
                     arrayRain.clear()
@@ -133,7 +139,8 @@ class FragmentForecast : BaseFragment<ForecastResponse>() {
         title: String,
         arrayTemp: ArrayList<DataPoint>, arrayFeels: ArrayList<DataPoint>,
         arrayRain: ArrayList<DataPoint>, arraySnow: ArrayList<DataPoint>,
-        maxY: Double, minY: Double
+        maxY: Double, minY: Double,
+        hasRain: Boolean = false, hasSnow: Boolean = false
     ) {
         val seriesTemp = LineGraphSeries<DataPoint>(arrayTemp.toTypedArray())
         seriesTemp.setOnDataPointTapListener { _, dataPoint ->
@@ -151,8 +158,8 @@ class FragmentForecast : BaseFragment<ForecastResponse>() {
         val graph = GraphView(context)
         graph.addSeries(seriesTemp)
         graph.addSeries(seriesFeels)
-        graph.secondScale.addSeries(seriesRain)
-        graph.secondScale.addSeries(seriesSnow)
+        if (!seriesRain.isEmpty || hasRain) graph.secondScale.addSeries(seriesRain)
+        if (!seriesSnow.isEmpty || hasSnow) graph.secondScale.addSeries(seriesSnow)
 
         seriesTemp.color = Color.BLUE
         seriesFeels.color = Color.CYAN
