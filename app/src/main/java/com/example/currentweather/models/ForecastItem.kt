@@ -15,13 +15,15 @@ class ForecastItem(
     val clouds: Int? = null,
     val windSpeed: Double? = null,
     val windDegree: Int? = null,
+    val rain: Double? = null,
+    val snow: Double? = null,
     val dateTxt: String? = null
 ) {
 
     override fun toString(): String {
         return "\n(date=${date.convertSecondToString()}, " +
                 "temp=%.2f, ".format(temperature?.convertKtoC()) +
-                "date=$date, " +
+//                "date=$date, " +
 //                "feels=$temperatureFeels, " +
 //                "pres=$pressure, " +
 //                "humi=$humidity, " +
@@ -30,7 +32,10 @@ class ForecastItem(
 //                "clouds=$clouds, " +
 //                "speed=$windSpeed, " +
 //                "deg=$windDegree, " +
-                "$dateTxt)" + if (date.isMidnight()) " midnight" else ""
+                "rain=$rain, " +
+                "snow=$snow, " +
+//                "$dateTxt" +
+                ")" + if (date.isMidnight()) " midnight" else ""
 //        ")"
     }
 }

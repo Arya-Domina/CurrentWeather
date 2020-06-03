@@ -27,6 +27,8 @@ class ForecastDeserializer : JsonDeserializer<ForecastResponse>, BaseDeserialize
                         it.asJsonObject.getJsonObject("clouds")?.getInt("all"),
                         it.asJsonObject.getJsonObject("wind")?.getDouble("speed"),
                         it.asJsonObject.getJsonObject("wind")?.getInt("deg"),
+                        it.asJsonObject.getJsonObject("rain")?.getDouble("3h"),
+                        it.asJsonObject.getJsonObject("snow")?.getDouble("3h"),
                         it.asJsonObject.getString("dt_txt")
                     )
                 )

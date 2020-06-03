@@ -1,5 +1,6 @@
 package com.example.currentweather.ui
 
+import android.graphics.Color
 import android.os.Bundle
 import android.util.TypedValue
 import android.view.LayoutInflater
@@ -16,24 +17,36 @@ import com.example.currentweather.models.ForecastResponse
 import com.example.currentweather.util.*
 import com.jjoe64.graphview.DefaultLabelFormatter
 import com.jjoe64.graphview.GraphView
+import com.jjoe64.graphview.LegendRenderer
 import com.jjoe64.graphview.series.DataPoint
 import com.jjoe64.graphview.series.LineGraphSeries
 import kotlinx.android.synthetic.main.fragment_forecast.*
+import kotlinx.android.synthetic.main.fragment_forecast.view.*
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import java.util.*
 import kotlin.math.ceil
 import kotlin.math.floor
+import kotlin.math.max
 
 class FragmentForecast : BaseFragment<ForecastResponse>() {
 
     private val mainViewModel: MainViewModel by sharedViewModel()
+    private val TAG_FIRST = "first"
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_forecast, container, false)
+        val view = inflater.inflate(R.layout.fragment_forecast, container, false)
+        view.switch_legend.setOnClickListener {
+            view.graph_layout.findViewWithTag<GraphView>(TAG_FIRST)?.let { firstGraph ->
+                view.graph_layout.removeView(firstGraph)
+                firstGraph.legendRenderer.isVisible = !firstGraph.legendRenderer.isVisible
+                view.graph_layout.addView(firstGraph, 0)
+            }
+        }
+        return view
     }
 
     override fun requestUpdate(cityName: String?) {
@@ -48,7 +61,7 @@ class FragmentForecast : BaseFragment<ForecastResponse>() {
     override fun observe(cityName: String?, textView: TextView) {
         mainViewModel.weatherForecast.observe(this, Observer { forecastResponse ->
             Logger.log("FragmentForecast", "observeForecast")
-            textView.text = forecastResponse.cityName ?: resources.getString(R.string.no_data)
+            textView.text = forecastResponse.cityName ?: getString(R.string.no_data)
             updateView(forecastResponse)
         })
     }
@@ -64,47 +77,114 @@ class FragmentForecast : BaseFragment<ForecastResponse>() {
         val minY = weather.forecast.minTempRounded()
         Logger.log("FragmentForecast", "updateView, rounded maxY: $maxY, minY: $minY")
 
-        val array = arrayListOf<DataPoint>()
+        val hasRain = weather.forecast.find { it.rain != null } != null
+        val hasSnow = weather.forecast.find { it.snow != null } != null
+
+        val arrayTemp = arrayListOf<DataPoint>()
+        val arrayFeels = arrayListOf<DataPoint>()
+        val arrayRain = arrayListOf<DataPoint>()
+        val arraySnow = arrayListOf<DataPoint>()
         var title = weather.forecast[0].date.convertSecondToStringDay()
         weather.forecast.forEachIndexed { index, forecastItem ->
-            array.add(
-                DataPoint(
-                    Date(forecastItem.date ?: 0),
-                    forecastItem.temperature?.convertKtoC() ?: 0.0
-                )
-            )
+            forecastItem.addToArray(arrayTemp, forecastItem.temperature)
+            forecastItem.addToArray(arrayFeels, forecastItem.temperatureFeels)
+            weather.forecast.addToArrayNotNull(arrayRain, index) { it.rain }
+            weather.forecast.addToArrayNotNull(arraySnow, index) { it.snow }
+
             if (forecastItem.date.isMidnight()) {
-                if (array.size > 2 && weather.forecast.size - index > 3) {
-                    addGraph(title, array, maxY, minY)
-                    array.clear()
+                if (arrayTemp.size > 2 && weather.forecast.size - index > 3) {
+                    addGraph(
+                        title, arrayTemp, arrayFeels, arrayRain, arraySnow,
+                        maxY, minY, hasRain, hasSnow
+                    )
+                    arrayTemp.clear()
+                    arrayFeels.clear()
+                    arrayRain.clear()
+                    arraySnow.clear()
                 }
                 if (weather.forecast.size - index > 3)
                     title = forecastItem.date.convertSecondToStringDay()
             }
         }
-        Logger.log("FragmentForecast", "updateView array")
 
-        addGraph(title, array, maxY, minY)
+        addGraph(title, arrayTemp, arrayFeels, arrayRain, arraySnow, maxY, minY)
+    }
+
+    private fun ForecastItem.addToArray(array: ArrayList<DataPoint>, value: Double?) {
+        array.add(
+            DataPoint(
+                Date(date ?: 0),
+                value?.convertKtoC() ?: 0.0
+            )
+        )
+    }
+
+    private inline fun List<ForecastItem>.addToArrayNotNull(
+        array: ArrayList<DataPoint>, index: Int,
+        selector: (ForecastItem) -> Double?
+    ) {
+        val value = selector(get(index))?.let { it }
+            ?: if (index != 0 && selector(get(index - 1)) != null ||
+                index != size - 1 && selector(get(index + 1)) != null
+            ) 0.0 else null
+        if (value != null) array.add(
+            DataPoint(
+                Date(get(index).date ?: 0),
+                value
+            )
+        )
     }
 
     private fun addGraph(
-        title: String, array: ArrayList<DataPoint>, maxY: Double, minY: Double
+        title: String,
+        arrayTemp: ArrayList<DataPoint>, arrayFeels: ArrayList<DataPoint>,
+        arrayRain: ArrayList<DataPoint>, arraySnow: ArrayList<DataPoint>,
+        maxY: Double, minY: Double,
+        hasRain: Boolean = false, hasSnow: Boolean = false
     ) {
-        val series = LineGraphSeries<DataPoint>(array.toTypedArray())
-        series.setOnDataPointTapListener { _, dataPoint ->
+        val seriesTemp = LineGraphSeries<DataPoint>(arrayTemp.toTypedArray())
+        seriesTemp.setOnDataPointTapListener { _, dataPoint ->
             Toast.makeText(
                 context,
                 "${dataPoint.x.convertToDataString()}: %.2f".format(dataPoint.y),
                 Toast.LENGTH_SHORT
             ).show()
         }
-        series.isDrawDataPoints = true
+        seriesTemp.isDrawDataPoints = true
+        val seriesFeels = LineGraphSeries<DataPoint>(arrayFeels.toTypedArray())
+        val seriesRain = LineGraphSeries<DataPoint>(arrayRain.toTypedArray())
+        val seriesSnow = LineGraphSeries<DataPoint>(arraySnow.toTypedArray())
 
         val graph = GraphView(context)
-        graph.addSeries(series)
+        graph.addSeries(seriesTemp)
+        graph.addSeries(seriesFeels)
+        if (!seriesRain.isEmpty || hasRain) graph.secondScale.addSeries(seriesRain)
+        if (!seriesSnow.isEmpty || hasSnow) graph.secondScale.addSeries(seriesSnow)
+
+        seriesTemp.color = Color.BLUE
+        seriesFeels.color = Color.CYAN
+        seriesRain.color = Color.argb(120, 172, 218, 255)
+        seriesRain.isDrawBackground = true
+        seriesSnow.color = Color.rgb(255, 255, 255)
+        seriesSnow.isDrawBackground = true
+        seriesSnow.backgroundColor = Color.argb(120, 255, 255, 255)
+        graph.gridLabelRenderer.verticalLabelsColor = Color.rgb(0, 0, 180)
+        graph.gridLabelRenderer.verticalLabelsSecondScaleColor = Color.rgb(80, 130, 255)
+
+        if (graph_layout.findViewWithTag<GraphView>(TAG_FIRST) == null) {
+            graph.tag = TAG_FIRST
+            graph.legendRenderer.backgroundColor = Color.argb(150, 255, 255, 255)
+            graph.legendRenderer.align = LegendRenderer.LegendAlign.TOP
+            seriesTemp.title = getString(R.string.legend_temp)
+            seriesFeels.title = getString(R.string.legend_feels)
+            seriesRain.title = getString(R.string.legend_rain)
+            seriesSnow.title = getString(R.string.legend_snow)
+        }
+
         graph.title = title
-        graph.labelRender(array.size)
-        graph.setViewportBounds(array.last().x, array.first().x, maxY, minY)
+        graph.labelRender(arrayTemp.size)
+        graph.setViewportBounds(arrayTemp.last().x, arrayTemp.first().x, maxY, minY)
+        graph.setSecondViewportBounds(arrayRain, arraySnow)
         graph.setMargin()
 
         graph_layout.addView(graph)
@@ -116,10 +196,15 @@ class FragmentForecast : BaseFragment<ForecastResponse>() {
         gridLabelRenderer.labelFormatter = object : DefaultLabelFormatter() {
             override fun formatLabel(value: Double, isValueX: Boolean): String {
                 return if (isValueX) {
-                    context.resources.getString(R.string.hour, value.convertToTimeString())
+                    getString(R.string.hour, value.convertToTimeString())
                 } else {
-                    super.formatLabel(value, isValueX)
+                    super.formatLabel(value, isValueX) + "°"
                 }
+            }
+        }
+        secondScale.labelFormatter = object : DefaultLabelFormatter() {
+            override fun formatLabel(value: Double, isValueX: Boolean): String {
+                return getString(R.string.millimeters, value)
             }
         }
     }
@@ -133,6 +218,15 @@ class FragmentForecast : BaseFragment<ForecastResponse>() {
         viewport.isYAxisBoundsManual = true
         viewport.setMaxY(maxY)
         viewport.setMinY(minY)
+    }
+
+    private fun GraphView.setSecondViewportBounds(
+        arrayRain: ArrayList<DataPoint>, arraySnow: ArrayList<DataPoint>
+    ) {
+        val maxRain = arrayRain.maxBy { it.y }?.y ?: 0.0
+        val maxSnow = arraySnow.maxBy { it.y }?.y ?: 0.0
+        secondScale.setMinY(0.0)
+        secondScale.setMaxY(max(maxRain, maxSnow).let { if (it < 5) 5.0 else ceil(it / 2) * 2 })
     }
 
     private fun GraphView.setMargin() {
@@ -152,6 +246,8 @@ class FragmentForecast : BaseFragment<ForecastResponse>() {
             forEach { item ->
                 if (item.temperature != null && item.temperature > temp)
                     temp = item.temperature
+                if (item.temperatureFeels != null && item.temperatureFeels > temp)
+                    temp = item.temperatureFeels
             }
             ceil(temp.convertKtoC() / 5) * 5
         } ?: 0.0
@@ -163,6 +259,8 @@ class FragmentForecast : BaseFragment<ForecastResponse>() {
             forEach { item ->
                 if (item.temperature != null && item.temperature < temp)
                     temp = item.temperature
+                if (item.temperatureFeels != null && item.temperatureFeels < temp)
+                    temp = item.temperatureFeels
             }
             floor(temp.convertKtoC() / 5) * 5
         } ?: 0.0
