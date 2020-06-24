@@ -6,4 +6,6 @@
     <color name="background">#E0F2F1</color>
     <color name="city_color">#006064</color>
     <color name="shadow_background">#88000000</color>
+
+    <color name="ic_launcher_background">#D2EEEC</color>
 </resources>
