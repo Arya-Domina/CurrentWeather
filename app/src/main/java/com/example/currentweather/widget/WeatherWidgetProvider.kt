@@ -17,7 +17,6 @@ import com.example.currentweather.Constants.Companion.RED_NUMBER
 import com.example.currentweather.Constants.Companion.TIME_FORMAT
 import com.example.currentweather.MainActivity
 import com.example.currentweather.R
-import com.example.currentweather.models.Params
 import com.example.currentweather.repository.WeatherRepository
 import com.example.currentweather.util.Logger
 import com.example.currentweather.util.PreferenceHelper
@@ -65,6 +64,7 @@ class WeatherWidgetProvider : AppWidgetProvider(), KoinComponent {
                 Logger.log("WeatherWidgetProvider", "onReceive, less")
 
                 val intentMain = Intent(context, MainActivity::class.java)
+                intentMain.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 context.startActivity(intentMain)
             }
         }
@@ -80,7 +80,7 @@ class WeatherWidgetProvider : AppWidgetProvider(), KoinComponent {
             .showLoad()
             .upWidget(manager, widgetId)
 
-        repository.getCurrentWeather(Pair(Params.CityName, preferenceHelper.getWeather().cityName))
+        repository.getCurrentWeather()
             .delay(100, TimeUnit.MILLISECONDS)
             .subscribe({ response ->
                 Logger.log("WeatherWidgetProvider", "updateWidget response: $response")

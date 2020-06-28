@@ -7,7 +7,7 @@
     <string name="err_wrong_city_name">Некорректное название города</string>
     <string name="err_no_connection">Отсутствует интернет соединение</string>
     <string name="wind_name">Ветер</string>
-    <string name="wind_format">%1$.0f м/с, %2$s</string>
+    <string name="wind_format">%1$.1f м/с, %2$s</string>
     <string name="wind_direction_e">Восточный</string>
     <string name="wind_direction_n">Северный</string>
     <string name="wind_direction_ne">Северо-восточный</string>
@@ -18,12 +18,18 @@
     <string name="wind_direction_w">Западный</string>
     <string name="wind_direction_un">Неизвестное направление</string>
     <string name="pressure_name">Давление</string>
-    <string name="pressure_format" translatable="false">%d мм рт. ст.</string>
+    <string name="pressure_format">%d мм рт. ст.</string>
     <string name="humidity_name">Влажность</string>
     <string name="clouds_name">Облачность</string>
     <string name="time_name">Время</string>
     <string name="sun_name">Солнце</string>
     <string name="sun_format">с %1$s до %2$s</string>
+    <string name="hour">%sч</string>
+    <string name="millimeters">%.0f мм</string>
+    <string name="legend_temp">Температура, °C</string>
+    <string name="legend_feels">По ощущениям, °C</string>
+    <string name="legend_rain">Дождь, мм</string>
+    <string name="legend_snow">Снег, мм</string>
 
     <string name="red">Красный</string>
     <string name="blue">Синий</string>
